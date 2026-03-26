@@ -121,13 +121,24 @@ async function fetchClasses(endpoint: string): Promise<string[]> {
 
 type FetchStatus = 'idle' | 'loading' | 'done' | 'error'
 
+export interface DatatypeVariant {
+  datatype: string    // full xsd:* URI, or 'IRI'
+  triples: number
+  distinctObjects: number
+}
+
+export interface NodeKindVariant {
+  nodeKind: string   // sh:IRI | sh:Literal | sh:BlankNode
+  triples: number
+}
+
 export interface Predicate {
   uri: string
   count: number
-  datatypeStatus: FetchStatus
-  datatype?: string[]     // all observed datatypes; 'IRI' used for object properties
+  variantsStatus: FetchStatus
+  variants?: DatatypeVariant[]
   nodeKindStatus: FetchStatus
-  nodeKind?: string       // sh:IRI | sh:Literal | sh:BlankNode
+  nodeKinds?: NodeKindVariant[]
   minCountStatus: FetchStatus
   minCount?: number
   maxCountStatus: FetchStatus
@@ -151,7 +162,7 @@ ORDER BY DESC(?count)`
   return rows.map(b => ({
     uri: b.predicate.value,
     count: parseInt(b.count.value, 10),
-    datatypeStatus: 'idle' as const,
+    variantsStatus: 'idle' as const,
     nodeKindStatus: 'idle' as const,
     minCountStatus: 'idle' as const,
     maxCountStatus: 'idle' as const,
@@ -160,8 +171,8 @@ ORDER BY DESC(?count)`
   }))
 }
 
-async function fetchDatatype(endpoint: string, classUri: string, predicateUri: string): Promise<string[]> {
-  const query = `SELECT ?datatype (COUNT(?o) AS ?count)
+async function fetchVariants(endpoint: string, classUri: string, predicateUri: string): Promise<DatatypeVariant[]> {
+  const query = `SELECT ?datatype (COUNT(?o) AS ?triples) (COUNT(DISTINCT ?o) AS ?distinctObjects)
 WHERE {
   ?s a <${classUri}> ;
      <${predicateUri}> ?o .
@@ -169,14 +180,17 @@ WHERE {
   FILTER(BOUND(?datatype))
 }
 GROUP BY ?datatype
-ORDER BY DESC(?count)`
+ORDER BY DESC(?triples)`
   const rows = await sparqlQuery(endpoint, query)
-  if (rows.length === 0) return ['unknown']
-  return rows.map(r => r.datatype.value === 'urn:shapetrospection:IRI' ? 'IRI' : r.datatype.value)
+  return rows.map(r => ({
+    datatype: r.datatype.value === 'urn:shapetrospection:IRI' ? 'IRI' : r.datatype.value,
+    triples: parseInt(r.triples.value, 10),
+    distinctObjects: parseInt(r.distinctObjects.value, 10),
+  }))
 }
 
-async function fetchNodeKind(endpoint: string, classUri: string, predicateUri: string): Promise<string> {
-  const query = `SELECT ?nodeKind (COUNT(?o) AS ?count)
+async function fetchNodeKind(endpoint: string, classUri: string, predicateUri: string): Promise<NodeKindVariant[]> {
+  const query = `SELECT ?nodeKind (COUNT(?o) AS ?triples)
 WHERE {
   ?s a <${classUri}> ;
      <${predicateUri}> ?o .
@@ -185,11 +199,12 @@ WHERE {
        <http://www.w3.org/ns/shacl#Literal>)) AS ?nodeKind)
 }
 GROUP BY ?nodeKind
-ORDER BY DESC(?count)
-LIMIT 1`
+ORDER BY DESC(?triples)`
   const rows = await sparqlQuery(endpoint, query)
-  if (rows.length === 0) return 'unknown'
-  return rows[0].nodeKind.value.replace('http://www.w3.org/ns/shacl#', 'sh:')
+  return rows.map(r => ({
+    nodeKind: r.nodeKind.value.replace('http://www.w3.org/ns/shacl#', 'sh:'),
+    triples: parseInt(r.triples.value, 10),
+  }))
 }
 
 async function fetchMinCount(endpoint: string, classUri: string, predicateUri: string): Promise<number> {
@@ -383,6 +398,14 @@ const XSD  = 'http://www.w3.org/2001/XMLSchema#'
 const SH   = 'http://www.w3.org/ns/shacl#'
 const VOID = 'http://rdfs.org/ns/void#'
 
+const RDF = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+
+function dtTurtle(uri: string): string {
+  if (uri.startsWith(XSD)) return `xsd:${uri.slice(XSD.length)}`
+  if (uri.startsWith(RDF))  return `rdf:${uri.slice(RDF.length)}`
+  return `<${uri}>`
+}
+
 function generateTurtle(classUri: string, predicates: Predicate[], distinctSubjects: number | null): string {
   const lastSep = Math.max(classUri.lastIndexOf('#'), classUri.lastIndexOf('/'))
   const ns        = classUri.substring(0, lastSep + 1)
@@ -399,6 +422,7 @@ function generateTurtle(classUri: string, predicates: Predicate[], distinctSubje
 
   lines.push(`@prefix sh:   <${SH}> .`)
   lines.push(`@prefix xsd:  <${XSD}> .`)
+  lines.push(`@prefix rdf:  <${RDF}> .`)
   lines.push(`@prefix void: <${VOID}> .`)
   lines.push('')
 
@@ -420,14 +444,34 @@ function generateTurtle(classUri: string, predicates: Predicate[], distinctSubje
 
     const attrs: string[] = []
 
-    if (p.nodeKindStatus === 'done' && p.nodeKind && p.nodeKind !== 'unknown')
-      attrs.push(`    sh:nodeKind ${p.nodeKind}`)
+    const multipleNodeKinds = p.nodeKindStatus === 'done' && p.nodeKinds && p.nodeKinds.length > 1
 
-    if (p.datatypeStatus === 'done' && p.datatype?.length === 1) {
-      const raw = p.datatype[0]
-      if (raw !== 'unknown' && raw !== 'IRI') {
-        const dt = raw.startsWith(XSD) ? `xsd:${raw.slice(XSD.length)}` : `<${raw}>`
+    if (p.nodeKindStatus === 'done' && p.nodeKinds && p.nodeKinds.length > 0) {
+      if (p.nodeKinds.length === 1) {
+        attrs.push(`    sh:nodeKind ${p.nodeKinds[0].nodeKind}`)
+      } else {
+        const maxT = Math.max(...p.nodeKinds.map(v => v.triples))
+        const entries = p.nodeKinds.map(v => {
+          const deactivated = v.triples < maxT ? ' ; sh:deactivated true' : ''
+          return `        [ sh:nodeKind ${v.nodeKind} ; void:triples ${v.triples}${deactivated} ]`
+        })
+        attrs.push(`    sh:or (\n${entries.join(' ,\n')}\n    )`)
+      }
+    }
+
+    if (!multipleNodeKinds && p.variantsStatus === 'done' && p.variants && p.variants.length > 0) {
+      const lit = p.variants.filter(v => v.datatype !== 'IRI')
+      if (lit.length === 1) {
+        const dt = dtTurtle(lit[0].datatype)
         attrs.push(`    sh:datatype ${dt}`)
+      } else if (lit.length > 1) {
+        const maxT = Math.max(...lit.map(v => v.triples))
+        const entries = lit.map(v => {
+          const dt = dtTurtle(v.datatype)
+          const deactivated = v.triples < maxT ? ' ; sh:deactivated true' : ''
+          return `        [ sh:datatype ${dt} ; void:triples ${v.triples} ; void:distinctObjects ${v.distinctObjects}${deactivated} ]`
+        })
+        attrs.push(`    sh:or (\n${entries.join(' ,\n')}\n    )`)
       }
     }
 
@@ -591,8 +635,8 @@ export default function App() {
           }
         }
 
-        await run('datatypeStatus',         'datatype',         () => fetchDatatype(endpoint, targetClass, p.uri))
-        await run('nodeKindStatus',         'nodeKind',         () => fetchNodeKind(endpoint, targetClass, p.uri))
+        await run('variantsStatus',          'variants',         () => fetchVariants(endpoint, targetClass, p.uri))
+        await run('nodeKindStatus',         'nodeKinds',        () => fetchNodeKind(endpoint, targetClass, p.uri))
         await run('minCountStatus',         'minCount',         () => fetchMinCount(endpoint, targetClass, p.uri))
         await run('maxCountStatus',         'maxCount',         () => fetchMaxCount(endpoint, targetClass, p.uri))
         await run('distinctObjectsStatus',  'distinctObjects',  () => fetchDistinctObjects(endpoint, targetClass, p.uri))
@@ -762,24 +806,26 @@ export default function App() {
                       <tr key={p.uri}>
                         <td className="predicate-uri">{p.uri}</td>
 
-                        <td>
+                        <td className="predicate-datatypes">
                           {p.nodeKindStatus === 'loading' && <IconSpinner size={11} />}
-                          {p.nodeKindStatus === 'done' && p.nodeKind && (
-                            <span className={`datatype-badge ${p.nodeKind === 'sh:IRI' ? 'iri' : p.nodeKind === 'unknown' ? 'unknown' : 'literal'}`}>
-                              {p.nodeKind === 'unknown' ? '—' : p.nodeKind}
+                          {p.nodeKindStatus === 'done' && p.nodeKinds?.map(v => (
+                            <span key={v.nodeKind} className={`datatype-badge ${v.nodeKind === 'sh:IRI' ? 'iri' : 'literal'}`}
+                              title={`triples: ${v.triples}`}>
+                              {v.nodeKind}
                             </span>
-                          )}
+                          ))}
                           {p.nodeKindStatus === 'error' && <span className="datatype-badge error">error</span>}
                         </td>
 
                         <td className="predicate-datatypes">
-                          {p.datatypeStatus === 'loading' && <IconSpinner size={11} />}
-                          {p.datatypeStatus === 'done' && p.datatype?.map(dt => (
-                            <span key={dt} className={`datatype-badge ${dt === 'IRI' ? 'iri' : dt === 'unknown' ? 'unknown' : ''}`}>
-                              {dt === 'IRI' || dt === 'unknown' ? '—' : dt.replace(XSD, 'xsd:')}
+                          {p.variantsStatus === 'loading' && <IconSpinner size={11} />}
+                          {p.variantsStatus === 'done' && p.variants?.map(v => (
+                            <span key={v.datatype} className={`datatype-badge ${v.datatype === 'IRI' ? 'iri' : 'literal'}`}
+                              title={`triples: ${v.triples}, distinct: ${v.distinctObjects}`}>
+                              {v.datatype === 'IRI' ? 'IRI' : v.datatype.replace(XSD, 'xsd:').replace(RDF, 'rdf:')}
                             </span>
                           ))}
-                          {p.datatypeStatus === 'error' && <span className="datatype-badge error">error</span>}
+                          {p.variantsStatus === 'error' && <span className="datatype-badge error">error</span>}
                         </td>
 
                         <td className="num">
