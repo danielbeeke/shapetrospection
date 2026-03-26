@@ -120,10 +120,12 @@ function emitObservation(
   endpointUri: string,
   observed: string,
   measures: string[],
+  nodeShapeUri?: string,
 ) {
   lines.push('')
   lines.push(`[] a qb:Observation ;`)
   lines.push(`    qb:dataSet <${endpointUri}> ;`)
+  if (nodeShapeUri) lines.push(`    shapetrospection:shape <${nodeShapeUri}> ;`)
   lines.push(`    shapetrospection:observed ${observed} ;`)
   measures.forEach((m, i) => lines.push(m + (i < measures.length - 1 ? ' ;' : ' .')))
 }
@@ -177,7 +179,7 @@ export function generateTurtle(
     const allVariantDefs: string[] = []
 
     for (const { uri, p } of propShapes) {
-      // Property observation (RDF-star quoted triple)
+      // Property observation
       const propObsMeasures: string[] = []
       propObsMeasures.push(`    void:triples ${p.count}`)
       if (p.distinctObjectsStatus === 'done' && p.distinctObjects !== undefined && p.distinctObjects > 0)
@@ -187,6 +189,7 @@ export function generateTurtle(
         endpoint,
         `<${uri}>`,
         propObsMeasures,
+        nodeShapeUri,
       )
 
       // Build property shape
@@ -196,7 +199,7 @@ export function generateTurtle(
       for (const vo of result.variantObservations) {
         const voMeasures: string[] = [`    void:triples ${vo.triples}`]
         if (vo.distinctObjects > 0) voMeasures.push(`    void:distinctObjects ${vo.distinctObjects}`)
-        emitObservation(observations, endpoint, `<${vo.uri}>`, voMeasures)
+        emitObservation(observations, endpoint, `<${vo.uri}>`, voMeasures, nodeShapeUri)
       }
 
       // Property shape lines
