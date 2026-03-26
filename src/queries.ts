@@ -38,12 +38,20 @@ export async function fetchVariants(
 ): Promise<DatatypeVariant[]> {
   const query = `SELECT ?datatype (COUNT(?o) AS ?triples) (COUNT(DISTINCT ?o) AS ?distinctObjects)
 WHERE {
-  ?s a <${classUri}> ;
-     <${predicateUri}> ?o .
-  BIND(IF(isIRI(?o), <urn:shapetrospection:IRI>,
-       IF(isBlank(?o), <urn:shapetrospection:BlankNode>,
-       DATATYPE(?o))) AS ?datatype)
-  FILTER(BOUND(?datatype))
+  {
+    ?s a <${classUri}> ; <${predicateUri}> ?o .
+    FILTER(isIRI(?o))
+    BIND(<urn:shapetrospection:IRI> AS ?datatype)
+  } UNION {
+    ?s a <${classUri}> ; <${predicateUri}> ?o .
+    FILTER(isBlank(?o))
+    BIND(<urn:shapetrospection:BlankNode> AS ?datatype)
+  } UNION {
+    ?s a <${classUri}> ; <${predicateUri}> ?o .
+    FILTER(isLiteral(?o))
+    BIND(DATATYPE(?o) AS ?datatype)
+    FILTER(BOUND(?datatype))
+  }
 }
 GROUP BY ?datatype
 ORDER BY DESC(?triples)`

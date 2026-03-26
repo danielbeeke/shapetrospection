@@ -414,6 +414,12 @@ body {
   color: var(--text);
 }
 
+.toolbar-btn.active {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--accent-hover);
+}
+
 .toolbar-btn.danger:hover {
   border-color: var(--danger);
   color: var(--danger);
@@ -483,7 +489,8 @@ body {
 }
 
 .predicates-table {
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   white-space: nowrap;
 }
 
@@ -567,6 +574,66 @@ body {
   color: var(--text-dim);
 }
 
+.shin-toggle {
+  display: inline-block;
+  width: 24px;
+  height: 13px;
+  border-radius: 7px;
+  position: relative;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+
+.shin-toggle::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  transition: left 0.15s, background 0.15s;
+}
+
+.shin-toggle.off {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  cursor: pointer;
+}
+
+.shin-toggle.off::after {
+  left: 2px;
+  background: var(--text-dim);
+}
+
+.shin-toggle.off:hover {
+  border-color: var(--warning);
+}
+
+.shin-toggle.off:hover::after {
+  background: var(--warning);
+}
+
+.shin-toggle.on {
+  background: var(--warning);
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.shin-toggle.on::after {
+  left: 12px;
+  background: #fff;
+}
+
+.shin-toggle.on:hover {
+  background: var(--text-dim);
+}
+
+.shin-value {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
 .datatype-badge.shin {
   background: #f6a62322;
   color: var(--warning);
@@ -575,6 +642,100 @@ body {
 .datatype-badge.error {
   background: #e0525222;
   color: var(--danger);
+}
+
+/* ── Class picker ───────────────────────────────────── */
+
+.class-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.class-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.class-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px 3px 9px;
+  background: var(--accent-dim);
+  border-radius: 20px;
+  max-width: 100%;
+}
+
+.class-chip-label {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--accent-hover);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.class-chip-remove {
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--accent-hover);
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+.class-chip-remove:hover {
+  opacity: 1;
+}
+
+.add-all-btn {
+  width: 100%;
+  padding: 7px 10px;
+  background: none;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  color: var(--text-dim);
+  font-size: 12px;
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.add-all-btn:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+/* ── Predicates class header row ────────────────────── */
+
+.class-header-row td {
+  padding: 8px 14px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  border-top: 2px solid var(--border);
+}
+
+.class-header-row:first-child td {
+  border-top: none;
+}
+
+.class-row-uri {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent-hover);
+  margin-right: 8px;
+}
+
+.class-row-meta {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-left: 8px;
 }
 
 /* ── Scrollbars ─────────────────────────────────────── */

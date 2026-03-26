@@ -35,6 +35,14 @@ export interface Predicate {
   shIn?: string[] | null   // null = too many values; string[] = Turtle-serialised terms
 }
 
+export interface ClassData {
+  uri: string
+  distinctSubjects: number | null
+  predicatesLoading: boolean
+  predicatesError: string | null
+  predicates: Predicate[]
+}
+
 export const XSD  = 'http://www.w3.org/2001/XMLSchema#'
 export const RDF  = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
 export const SH   = 'http://www.w3.org/ns/shacl#'

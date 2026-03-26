@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, Fragment, type Dispatch, type SetStateAction } from 'react'
 import './App.css'
 import { XSD, RDF } from './types'
-import type { Predicate } from './types'
+import type { ClassData, Predicate } from './types'
 import {
   fetchClasses,
   fetchPredicates,
@@ -46,17 +46,6 @@ function IconDownload({ size = 13 }: { size?: number }) {
   )
 }
 
-function IconTrash({ size = 13 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="3 6 5 6 21 6"/>
-      <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-      <path d="M10 11v6M14 11v6"/>
-      <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
-    </svg>
-  )
-}
-
 function IconCode({ size = 14 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -91,6 +80,15 @@ function IconTag({ size = 14 }: { size?: number }) {
   )
 }
 
+function IconX({ size = 10 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+      <line x1="18" y1="6" x2="6" y2="18"/>
+      <line x1="6" y1="6" x2="18" y2="18"/>
+    </svg>
+  )
+}
+
 function IconHexagon({ size = 28 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -104,6 +102,86 @@ function IconHexagon({ size = 28 }: { size?: number }) {
 // ── Types ────────────────────────────────────────────
 
 type Tab = 'output' | 'predicates'
+
+interface CancelToken {
+  cancelled: boolean
+  cancelledClasses: Set<string>
+}
+
+// ── Per-class enrichment (module-level to avoid stale closures) ──
+
+async function enrichPredicate(
+  classUri: string,
+  predUri: string,
+  statusKey: string,
+  valueKey: string,
+  fn: () => Promise<unknown>,
+  token: CancelToken,
+  setClassData: Dispatch<SetStateAction<ClassData[]>>,
+) {
+  const gone = () => token.cancelled || token.cancelledClasses.has(classUri)
+  if (gone()) return
+  setClassData(prev => prev.map(d => d.uri === classUri ? {
+    ...d, predicates: d.predicates.map(p => p.uri === predUri ? { ...p, [statusKey]: 'loading' } : p),
+  } : d))
+  try {
+    const value = await fn()
+    if (!gone()) setClassData(prev => prev.map(d => d.uri === classUri ? {
+      ...d, predicates: d.predicates.map(p => p.uri === predUri ? { ...p, [valueKey]: value, [statusKey]: 'done' } : p),
+    } : d))
+  } catch {
+    if (!gone()) setClassData(prev => prev.map(d => d.uri === classUri ? {
+      ...d, predicates: d.predicates.map(p => p.uri === predUri ? { ...p, [statusKey]: 'error' } : p),
+    } : d))
+  }
+}
+
+async function enrichClass(
+  classUri: string,
+  token: CancelToken,
+  endpoint: string,
+  setClassData: Dispatch<SetStateAction<ClassData[]>>,
+) {
+  const gone = () => token.cancelled || token.cancelledClasses.has(classUri)
+
+  const updateClass = (patch: Partial<ClassData>) => {
+    if (gone()) return
+    setClassData(prev => prev.map(d => d.uri === classUri ? { ...d, ...patch } : d))
+  }
+
+  // Distinct subjects
+  try {
+    const n = await fetchDistinctSubjects(endpoint, classUri)
+    updateClass({ distinctSubjects: n })
+  } catch { /* non-fatal */ }
+
+  if (gone()) return
+
+  // Predicates
+  let predicates: Predicate[]
+  try {
+    predicates = await fetchPredicates(endpoint, classUri)
+  } catch (err) {
+    updateClass({ predicatesLoading: false, predicatesError: (err as Error).message })
+    return
+  }
+  if (gone()) return
+  updateClass({ predicates, predicatesLoading: false })
+
+  // Enrich each predicate
+  for (const p of predicates) {
+    if (gone()) break
+    const ep = (sk: string, vk: string, fn: () => Promise<unknown>) =>
+      enrichPredicate(classUri, p.uri, sk, vk, fn, token, setClassData)
+
+    await ep('variantsStatus',        'variants',        () => fetchVariants(endpoint, classUri, p.uri))
+    await ep('nodeKindStatus',        'nodeKinds',       () => fetchNodeKind(endpoint, classUri, p.uri))
+    await ep('minCountStatus',        'minCount',        () => fetchMinCount(endpoint, classUri, p.uri))
+    await ep('maxCountStatus',        'maxCount',        () => fetchMaxCount(endpoint, classUri, p.uri))
+    await ep('distinctObjectsStatus', 'distinctObjects', () => fetchDistinctObjects(endpoint, classUri, p.uri))
+    // sh:in is not auto-fetched — user triggers it per predicate
+  }
+}
 
 // ── Turtle syntax highlight ──────────────────────────
 
@@ -140,40 +218,39 @@ function TurtleLine({ line }: { line: string }) {
 }
 
 function TurtleView({ src }: { src: string }) {
-  const lines = src.split('\n')
   return (
     <pre className="code-block">
-      {lines.map((line, i) => <TurtleLine key={i} line={line} />)}
+      {src.split('\n').map((line, i) => <TurtleLine key={i} line={line} />)}
     </pre>
   )
 }
 
-// ── ClassAutocomplete ────────────────────────────────
+// ── ClassPicker ──────────────────────────────────────
 
-interface ClassAutocompleteProps {
+interface ClassPickerProps {
   classes: string[]
   loading: boolean
   error: string | null
-  value: string
-  onChange: (v: string) => void
+  selected: string[]
+  onAdd: (uri: string) => void
+  onRemove: (uri: string) => void
+  onAddAll: () => void
 }
 
-function ClassAutocomplete({ classes, loading, error, value, onChange }: ClassAutocompleteProps) {
-  const [query, setQuery] = useState(value)
+function ClassPicker({ classes, loading, error, selected, onAdd, onRemove, onAddAll }: ClassPickerProps) {
+  const [query, setQuery] = useState('')
   const [open, setOpen] = useState(false)
   const [highlighted, setHighlighted] = useState(0)
   const containerRef = useRef<HTMLDivElement>(null)
-  const inputRef = useRef<HTMLInputElement>(null)
 
-  useEffect(() => { setQuery(value) }, [value])
+  const selectedSet = new Set(selected)
+  const filtered = classes
+    .filter(c => !selectedSet.has(c))
+    .filter(c => query.trim() === '' || c.toLowerCase().includes(query.toLowerCase()))
 
-  const filtered = query.trim() === ''
-    ? classes
-    : classes.filter(c => c.toLowerCase().includes(query.toLowerCase()))
-
-  function select(cls: string) {
-    setQuery(cls)
-    onChange(cls)
+  function add(uri: string) {
+    onAdd(uri)
+    setQuery('')
     setOpen(false)
   }
 
@@ -182,24 +259,15 @@ function ClassAutocomplete({ classes, loading, error, value, onChange }: ClassAu
       if (e.key === 'ArrowDown' || e.key === 'Enter') setOpen(true)
       return
     }
-    if (e.key === 'ArrowDown') {
-      e.preventDefault()
-      setHighlighted(h => Math.min(h + 1, filtered.length - 1))
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault()
-      setHighlighted(h => Math.max(h - 1, 0))
-    } else if (e.key === 'Enter') {
-      if (filtered[highlighted]) select(filtered[highlighted])
-    } else if (e.key === 'Escape') {
-      setOpen(false)
-    }
+    if (e.key === 'ArrowDown') { e.preventDefault(); setHighlighted(h => Math.min(h + 1, filtered.length - 1)) }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); setHighlighted(h => Math.max(h - 1, 0)) }
+    else if (e.key === 'Enter') { if (filtered[highlighted]) add(filtered[highlighted]) }
+    else if (e.key === 'Escape') setOpen(false)
   }
 
   useEffect(() => {
     function handler(e: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setOpen(false)
-      }
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) setOpen(false)
     }
     document.addEventListener('mousedown', handler)
     return () => document.removeEventListener('mousedown', handler)
@@ -207,47 +275,71 @@ function ClassAutocomplete({ classes, loading, error, value, onChange }: ClassAu
 
   useEffect(() => { setHighlighted(0) }, [query])
 
+  const unselectedCount = classes.length - selected.length
   const showDropdown = open && !loading && !error && filtered.length > 0
 
   return (
-    <div className="autocomplete" ref={containerRef}>
-      <div className="autocomplete-input-wrap">
-        <input
-          ref={inputRef}
-          className="field-input"
-          type="text"
-          placeholder={loading ? 'Loading classes…' : error ? 'Failed to load classes' : classes.length ? `Search ${classes.length} classes…` : 'No endpoint set'}
-          value={query}
-          disabled={loading || !!error || classes.length === 0}
-          onChange={e => {
-            setQuery(e.target.value)
-            onChange('')
-            setOpen(true)
-          }}
-          onFocus={() => setOpen(true)}
-          onKeyDown={handleKey}
-        />
-        <span className="autocomplete-adornment">
-          {loading
-            ? <IconSpinner size={13} />
-            : <span className={`autocomplete-chevron ${open ? 'flipped' : ''}`}><IconChevron /></span>
-          }
-        </span>
-      </div>
-      {error && <div className="autocomplete-error">{error}</div>}
-      {showDropdown && (
-        <ul className="autocomplete-dropdown">
-          {filtered.map((cls, i) => (
-            <li
-              key={cls}
-              className={`autocomplete-option ${i === highlighted ? 'highlighted' : ''}`}
-              onMouseDown={() => select(cls)}
-              onMouseEnter={() => setHighlighted(i)}
-            >
-              {cls}
-            </li>
+    <div className="class-picker">
+      {/* Selected chips */}
+      {selected.length > 0 && (
+        <div className="class-chips">
+          {selected.map(uri => (
+            <span key={uri} className="class-chip">
+              <span className="class-chip-label" title={uri}>{uri.split(/[#/]/).pop()}</span>
+              <button className="class-chip-remove" onClick={() => onRemove(uri)}><IconX size={9} /></button>
+            </span>
           ))}
-        </ul>
+        </div>
+      )}
+
+      {/* Autocomplete input */}
+      <div className="autocomplete" ref={containerRef}>
+        <div className="autocomplete-input-wrap">
+          <input
+            className="field-input"
+            type="text"
+            placeholder={
+              loading ? 'Loading classes…'
+              : error ? 'Failed to load classes'
+              : classes.length === 0 ? 'No endpoint set'
+              : unselectedCount === 0 ? 'All classes selected'
+              : `Add class (${unselectedCount} available)…`
+            }
+            value={query}
+            disabled={loading || !!error || unselectedCount === 0}
+            onChange={e => { setQuery(e.target.value); setOpen(true) }}
+            onFocus={() => setOpen(true)}
+            onKeyDown={handleKey}
+          />
+          <span className="autocomplete-adornment">
+            {loading
+              ? <IconSpinner size={13} />
+              : <span className={`autocomplete-chevron ${open ? 'flipped' : ''}`}><IconChevron /></span>
+            }
+          </span>
+        </div>
+        {error && <div className="autocomplete-error">{error}</div>}
+        {showDropdown && (
+          <ul className="autocomplete-dropdown">
+            {filtered.map((cls, i) => (
+              <li
+                key={cls}
+                className={`autocomplete-option ${i === highlighted ? 'highlighted' : ''}`}
+                onMouseDown={() => add(cls)}
+                onMouseEnter={() => setHighlighted(i)}
+              >
+                {cls}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      {/* Add all button */}
+      {!loading && !error && unselectedCount > 0 && (
+        <button className="add-all-btn" onClick={onAddAll}>
+          Add all {classes.length} classes
+        </button>
       )}
     </div>
   )
@@ -257,31 +349,63 @@ function ClassAutocomplete({ classes, loading, error, value, onChange }: ClassAu
 
 export default function App() {
   const [endpoint, setEndpoint] = useState(() => localStorage.getItem('endpoint') ?? '')
-  const [targetClass, setTargetClass] = useState(() => localStorage.getItem('targetClass') ?? '')
+  const [targetClasses, setTargetClasses] = useState<string[]>(() => {
+    try { return JSON.parse(localStorage.getItem('targetClasses') ?? '[]') } catch { return [] }
+  })
   const [activeTab, setActiveTab] = useState<Tab>(() => (localStorage.getItem('activeTab') as Tab) ?? 'output')
 
   const [classes, setClasses] = useState<string[]>([])
   const [classesLoading, setClassesLoading] = useState(false)
   const [classesError, setClassesError] = useState<string | null>(null)
 
-  const [predicates, setPredicates] = useState<Predicate[]>([])
-  const [predicatesLoading, setPredicatesLoading] = useState(false)
-  const [predicatesError, setPredicatesError] = useState<string | null>(null)
-
-  const [distinctSubjects, setDistinctSubjects] = useState<number | null>(null)
+  const [classData, setClassData] = useState<ClassData[]>([])
   const [totalTriples, setTotalTriples] = useState<number | null>(null)
 
   const [turtle, setTurtle] = useState<string | null>(null)
 
-  // Auto-regenerate turtle whenever predicates are updated
-  useEffect(() => {
-    if (!targetClass || predicates.length === 0) { setTurtle(null); return }
-    setTurtle(generateTurtle(endpoint, targetClass, predicates, distinctSubjects, totalTriples))
-  }, [endpoint, targetClass, predicates, distinctSubjects, totalTriples])
+  // Enrichment session management
+  const cancelRef = useRef<CancelToken>({ cancelled: false, cancelledClasses: new Set() })
+  const prevEndpointRef = useRef('')
+  const prevClassesRef = useRef<string[]>([])
+  const classDataRef = useRef<ClassData[]>([])
+  classDataRef.current = classData
 
-  // Fetch classes and total triples whenever endpoint changes
+  // sh:in enabled set — persisted to localStorage, keyed by "classUri::predUri"
+  const shInEnabledRef = useRef<Set<string>>(
+    new Set(JSON.parse(localStorage.getItem('shInEnabled') ?? '[]') as string[])
+  )
+
+  // Auto-fetch sh:in for predicates that were previously toggled on
   useEffect(() => {
-    if (!endpoint) { setClasses([]); setClassesError(null); setTotalTriples(null); return }
+    const enabled = shInEnabledRef.current
+    if (enabled.size === 0) return
+    const token = cancelRef.current
+    for (const d of classData) {
+      for (const p of d.predicates) {
+        if (p.shInStatus === 'idle' && enabled.has(`${d.uri}::${p.uri}`)) {
+          enrichPredicate(d.uri, p.uri, 'shInStatus', 'shIn',
+            () => fetchShIn(endpoint, d.uri, p.uri),
+            token, setClassData)
+        }
+      }
+    }
+  }, [classData, endpoint])
+
+  // Auto-regenerate turtle whenever classData changes
+  useEffect(() => {
+    const ready = classData.filter(d => d.predicates.length > 0)
+    if (ready.length === 0) { setTurtle(null); return }
+    setTurtle(generateTurtle(endpoint, ready, totalTriples))
+  }, [endpoint, classData, totalTriples])
+
+  // Fetch classes and total triples when endpoint changes
+  useEffect(() => {
+    if (!endpoint) {
+      setClasses([])
+      setClassesError(null)
+      setTotalTriples(null)
+      return
+    }
     let cancelled = false
     setClassesLoading(true)
     setClassesError(null)
@@ -295,82 +419,90 @@ export default function App() {
     return () => { cancelled = true }
   }, [endpoint])
 
-  // Fetch predicates, then enrich each one — one query at a time
+  // Manage per-class enrichment when endpoint or targetClasses changes
   useEffect(() => {
-    if (!endpoint || !targetClass) {
-      setPredicates([])
-      setPredicatesError(null)
-      setDistinctSubjects(null)
-      return
-    }
-    let cancelled = false
+    const endpointChanged = prevEndpointRef.current !== endpoint
+    prevEndpointRef.current = endpoint ?? ''
 
-    async function run() {
-      setPredicatesLoading(true)
-      setPredicatesError(null)
-      setDistinctSubjects(null)
-
-      try {
-        const n = await fetchDistinctSubjects(endpoint, targetClass)
-        if (!cancelled) setDistinctSubjects(n)
-      } catch { /* non-fatal */ }
-
-      if (cancelled) return
-
-      let list: Predicate[]
-      try {
-        list = await fetchPredicates(endpoint, targetClass)
-      } catch (err) {
-        if (!cancelled) { setPredicatesError((err as Error).message); setPredicatesLoading(false) }
-        return
-      }
-      if (cancelled) return
-      setPredicates(list)
-      setPredicatesLoading(false)
-
-      for (const p of list) {
-        if (cancelled) break
-
-        const enrich = async <K extends keyof Predicate>(
-          statusKey: K & `${string}Status`,
-          valueKey: keyof Predicate,
-          fn: () => Promise<Predicate[typeof valueKey]>,
-        ) => {
-          if (cancelled) return
-          setPredicates(prev => prev.map(x => x.uri === p.uri ? { ...x, [statusKey]: 'loading' } : x))
-          try {
-            const value = await fn()
-            if (!cancelled)
-              setPredicates(prev => prev.map(x => x.uri === p.uri ? { ...x, [valueKey]: value, [statusKey]: 'done' } : x))
-          } catch {
-            if (!cancelled)
-              setPredicates(prev => prev.map(x => x.uri === p.uri ? { ...x, [statusKey]: 'error' } : x))
-          }
-        }
-
-        await enrich('variantsStatus',         'variants',         () => fetchVariants(endpoint, targetClass, p.uri))
-        await enrich('nodeKindStatus',          'nodeKinds',        () => fetchNodeKind(endpoint, targetClass, p.uri))
-        await enrich('minCountStatus',          'minCount',         () => fetchMinCount(endpoint, targetClass, p.uri))
-        await enrich('maxCountStatus',          'maxCount',         () => fetchMaxCount(endpoint, targetClass, p.uri))
-        await enrich('distinctObjectsStatus',   'distinctObjects',  () => fetchDistinctObjects(endpoint, targetClass, p.uri))
-        await enrich('shInStatus',              'shIn',             () => fetchShIn(endpoint, targetClass, p.uri))
-      }
+    if (endpointChanged) {
+      cancelRef.current.cancelled = true
+      cancelRef.current = { cancelled: false, cancelledClasses: new Set() }
+      setClassData([])
+      prevClassesRef.current = []
+      if (!endpoint) return
     }
 
-    run()
-    return () => { cancelled = true }
-  }, [endpoint, targetClass])
+    const token = cancelRef.current
+    const prev = new Set(prevClassesRef.current)
+    const curr = new Set(targetClasses)
+
+    // Cancel and remove dropped classes
+    const dropped = [...prev].filter(u => !curr.has(u))
+    if (dropped.length > 0) {
+      dropped.forEach(u => token.cancelledClasses.add(u))
+      setClassData(d => d.filter(c => !dropped.includes(c.uri)))
+    }
+
+    // Start enrichment for newly added classes
+    const added = targetClasses.filter(u => !prev.has(u))
+    for (const classUri of added) {
+      if (token.cancelled) break
+      setClassData(prev => [...prev, {
+        uri: classUri,
+        distinctSubjects: null,
+        predicatesLoading: true,
+        predicatesError: null,
+        predicates: [],
+      }])
+      enrichClass(classUri, token, endpoint, setClassData)
+    }
+
+    prevClassesRef.current = [...targetClasses]
+  }, [endpoint, targetClasses])
 
   function handleEndpointChange(value: string) {
     setEndpoint(value)
     localStorage.setItem('endpoint', value)
-    setTargetClass('')
-    localStorage.removeItem('targetClass')
+    setTargetClasses([])
+    localStorage.removeItem('targetClasses')
   }
 
-  function handleClassChange(value: string) {
-    setTargetClass(value)
-    localStorage.setItem('targetClass', value)
+  function handleAddClass(uri: string) {
+    if (targetClasses.includes(uri)) return
+    const next = [...targetClasses, uri]
+    setTargetClasses(next)
+    localStorage.setItem('targetClasses', JSON.stringify(next))
+  }
+
+  function handleRemoveClass(uri: string) {
+    const next = targetClasses.filter(u => u !== uri)
+    setTargetClasses(next)
+    localStorage.setItem('targetClasses', JSON.stringify(next))
+  }
+
+  function handleAddAll() {
+    const next = [...classes]
+    setTargetClasses(next)
+    localStorage.setItem('targetClasses', JSON.stringify(next))
+  }
+
+  function handleFetchShIn(classUri: string, predUri: string) {
+    const key = `${classUri}::${predUri}`
+    shInEnabledRef.current.add(key)
+    localStorage.setItem('shInEnabled', JSON.stringify([...shInEnabledRef.current]))
+    enrichPredicate(classUri, predUri, 'shInStatus', 'shIn',
+      () => fetchShIn(endpoint, classUri, predUri),
+      cancelRef.current, setClassData)
+  }
+
+  function handleClearShIn(classUri: string, predUri: string) {
+    const key = `${classUri}::${predUri}`
+    shInEnabledRef.current.delete(key)
+    localStorage.setItem('shInEnabled', JSON.stringify([...shInEnabledRef.current]))
+    setClassData(prev => prev.map(d => d.uri === classUri ? {
+      ...d,
+      predicates: d.predicates.map(p => p.uri === predUri ? { ...p, shInStatus: 'idle', shIn: undefined } : p),
+    } : d))
   }
 
   function handleCopy() {
@@ -379,14 +511,19 @@ export default function App() {
 
   function handleDownload() {
     if (!turtle) return
-    const localName = targetClass.split(/[#/]/).pop() ?? 'shapes'
+    const name = targetClasses.length === 1
+      ? (targetClasses[0].split(/[#/]/).pop() ?? 'shapes')
+      : 'shapes'
     const blob = new Blob([turtle], { type: 'text/turtle' })
     const a = document.createElement('a')
     a.href = URL.createObjectURL(blob)
-    a.download = `${localName}.ttl`
+    a.download = `${name}.ttl`
     a.click()
     URL.revokeObjectURL(a.href)
   }
+
+  const totalPredicates = classData.reduce((s, d) => s + d.predicates.length, 0)
+  const anyLoading = classData.some(d => d.predicatesLoading)
 
   return (
     <div className="app">
@@ -422,13 +559,15 @@ export default function App() {
         </div>
 
         <div className="sidebar-section">
-          <div className="section-label">Class</div>
-          <ClassAutocomplete
+          <div className="section-label">Classes</div>
+          <ClassPicker
             classes={classes}
             loading={classesLoading}
             error={classesError}
-            value={targetClass}
-            onChange={handleClassChange}
+            selected={targetClasses}
+            onAdd={handleAddClass}
+            onRemove={handleRemoveClass}
+            onAddAll={handleAddAll}
           />
         </div>
 
@@ -445,7 +584,7 @@ export default function App() {
           <button className={`tab-btn ${activeTab === 'predicates' ? 'active' : ''}`} onClick={() => { setActiveTab('predicates'); localStorage.setItem('activeTab', 'predicates') }}>
             <IconTag size={13} />
             Predicates
-            {predicates.length > 0 && <span className="tab-count">{predicates.length}</span>}
+            {totalPredicates > 0 && <span className="tab-count">{totalPredicates}</span>}
           </button>
         </nav>
 
@@ -454,9 +593,11 @@ export default function App() {
           <div className="output-area">
             <div className="output-toolbar">
               <div className="output-toolbar-left">
-                <div className={`status-dot ${turtle ? 'ready' : ''}`} />
+                <div className={`status-dot ${turtle ? 'ready' : anyLoading ? 'loading' : ''}`} />
                 <span className="output-info">
-                  {turtle ? `text/turtle · 1 node shape · ${predicates.length} property shapes` : 'No output yet'}
+                  {turtle
+                    ? `text/turtle · ${classData.length} node shapes · ${totalPredicates} property shapes`
+                    : anyLoading ? 'Fetching…' : 'No output yet'}
                 </span>
               </div>
               <button className="toolbar-btn" disabled={!turtle} onClick={handleCopy}><IconCopy />Copy</button>
@@ -468,7 +609,7 @@ export default function App() {
                 <div className="empty-state">
                   <IconHexagon size={48} />
                   <div className="empty-title">No shapes generated yet</div>
-                  <div className="empty-desc">Select a class to produce SHACL shapes in Turtle format.</div>
+                  <div className="empty-desc">Select one or more classes to produce SHACL shapes in Turtle format.</div>
                 </div>
               )
             }
@@ -480,22 +621,20 @@ export default function App() {
           <div className="output-area">
             <div className="output-toolbar">
               <div className="output-toolbar-left">
-                {predicatesLoading
-                  ? <><IconSpinner size={13} /><span className="output-info">Fetching predicates…</span></>
-                  : predicatesError
-                    ? <span className="output-info" style={{ color: 'var(--danger)' }}>{predicatesError}</span>
-                    : <><div className={`status-dot ${predicates.length > 0 ? 'ready' : ''}`} /><span className="output-info">{predicates.length > 0 ? `${predicates.length} predicates` : 'No class selected'}</span></>
+                {anyLoading
+                  ? <><IconSpinner size={13} /><span className="output-info">Fetching…</span></>
+                  : <><div className={`status-dot ${totalPredicates > 0 ? 'ready' : ''}`} /><span className="output-info">{totalPredicates > 0 ? `${totalPredicates} predicates across ${classData.length} classes` : 'No classes selected'}</span></>
                 }
               </div>
             </div>
-            {!predicatesLoading && !predicatesError && predicates.length === 0 && (
+            {classData.length === 0 && (
               <div className="empty-state">
                 <IconTag size={48} />
                 <div className="empty-title">No predicates yet</div>
-                <div className="empty-desc">Select a class to see all predicates used by its instances.</div>
+                <div className="empty-desc">Select one or more classes to see their predicates.</div>
               </div>
             )}
-            {!predicatesLoading && predicates.length > 0 && (
+            {classData.length > 0 && (
               <div className="predicates-list">
                 <table className="predicates-table">
                   <thead>
@@ -511,63 +650,83 @@ export default function App() {
                     </tr>
                   </thead>
                   <tbody>
-                    {predicates.map(p => (
-                      <tr key={p.uri}>
-                        <td className="predicate-uri">{p.uri}</td>
+                    {classData.map(d => (
+                      <Fragment key={d.uri}>
+                        <tr className="class-header-row">
+                          <td colSpan={8}>
+                            <span className="class-row-uri">{d.uri}</span>
+                            {d.predicatesLoading && <IconSpinner size={11} />}
+                            {d.predicatesError && <span className="datatype-badge error">{d.predicatesError}</span>}
+                            {d.distinctSubjects !== null && <span className="class-row-meta">· {d.distinctSubjects.toLocaleString()} subjects</span>}
+                          </td>
+                        </tr>
+                        {d.predicates.map(p => (
+                          <tr key={`${d.uri}:${p.uri}`}>
+                            <td className="predicate-uri">{p.uri}</td>
 
-                        <td className="predicate-datatypes">
-                          {p.nodeKindStatus === 'loading' && <IconSpinner size={11} />}
-                          {p.nodeKindStatus === 'done' && p.nodeKinds?.map(v => (
-                            <span key={v.nodeKind} className={`datatype-badge ${v.nodeKind === 'sh:IRI' ? 'iri' : 'literal'}`}
-                              title={`triples: ${v.triples}`}>
-                              {v.nodeKind}
-                            </span>
-                          ))}
-                          {p.nodeKindStatus === 'error' && <span className="datatype-badge error">error</span>}
-                        </td>
+                            <td>
+                              <div className="predicate-datatypes">
+                                {p.nodeKindStatus === 'loading' && <IconSpinner size={11} />}
+                                {p.nodeKindStatus === 'done' && p.nodeKinds?.map(v => (
+                                  <span key={v.nodeKind} className={`datatype-badge ${v.nodeKind === 'sh:IRI' ? 'iri' : 'literal'}`}
+                                    title={`triples: ${v.triples}`}>
+                                    {v.nodeKind}
+                                  </span>
+                                ))}
+                                {p.nodeKindStatus === 'error' && <span className="datatype-badge error">error</span>}
+                              </div>
+                            </td>
 
-                        <td className="predicate-datatypes">
-                          {p.variantsStatus === 'loading' && <IconSpinner size={11} />}
-                          {p.variantsStatus === 'done' && p.variants?.map(v => (
-                            <span key={v.datatype}
-                              className={`datatype-badge ${v.datatype === 'IRI' ? 'iri' : v.datatype === 'BlankNode' ? 'unknown' : 'literal'}`}
-                              title={`triples: ${v.triples}, distinct: ${v.distinctObjects}`}>
-                              {v.datatype === 'IRI' ? 'IRI' : v.datatype === 'BlankNode' ? 'BlankNode' : v.datatype.replace(XSD, 'xsd:').replace(RDF, 'rdf:')}
-                            </span>
-                          ))}
-                          {p.variantsStatus === 'error' && <span className="datatype-badge error">error</span>}
-                        </td>
+                            <td>
+                              <div className="predicate-datatypes">
+                                {p.variantsStatus === 'loading' && <IconSpinner size={11} />}
+                                {p.variantsStatus === 'done' && p.variants?.map(v => (
+                                  <span key={v.datatype}
+                                    className={`datatype-badge ${v.datatype === 'IRI' ? 'iri' : v.datatype === 'BlankNode' ? 'unknown' : 'literal'}`}
+                                    title={`triples: ${v.triples}, distinct: ${v.distinctObjects}`}>
+                                    {v.datatype === 'IRI' ? 'IRI' : v.datatype === 'BlankNode' ? 'BlankNode' : v.datatype.replace(XSD, 'xsd:').replace(RDF, 'rdf:')}
+                                  </span>
+                                ))}
+                                {p.variantsStatus === 'error' && <span className="datatype-badge error">error</span>}
+                              </div>
+                            </td>
 
-                        <td className="num">
-                          {p.minCountStatus === 'loading' && <IconSpinner size={11} />}
-                          {p.minCountStatus === 'done' && p.minCount}
-                          {p.minCountStatus === 'error' && <span className="datatype-badge error">error</span>}
-                        </td>
+                            <td className="num">
+                              {p.minCountStatus === 'loading' && <IconSpinner size={11} />}
+                              {p.minCountStatus === 'done' && p.minCount}
+                              {p.minCountStatus === 'error' && <span className="datatype-badge error">error</span>}
+                            </td>
 
-                        <td className="num">
-                          {p.maxCountStatus === 'loading' && <IconSpinner size={11} />}
-                          {p.maxCountStatus === 'done' && (p.maxCount || '—')}
-                          {p.maxCountStatus === 'error' && <span className="datatype-badge error">error</span>}
-                        </td>
+                            <td className="num">
+                              {p.maxCountStatus === 'loading' && <IconSpinner size={11} />}
+                              {p.maxCountStatus === 'done' && (p.maxCount || '—')}
+                              {p.maxCountStatus === 'error' && <span className="datatype-badge error">error</span>}
+                            </td>
 
-                        <td className="num">
-                          {p.shInStatus === 'loading' && <IconSpinner size={11} />}
-                          {p.shInStatus === 'done' && (
-                            p.shIn === null
-                              ? '—'
-                              : <span className="datatype-badge shin">({p.shIn.length})</span>
-                          )}
-                          {p.shInStatus === 'error' && <span className="datatype-badge error">error</span>}
-                        </td>
+                            <td className="num">
+                              {p.shInStatus === 'idle' && (
+                                <button className="shin-toggle off" onClick={() => handleFetchShIn(d.uri, p.uri)} title="Enable sh:in for this predicate" />
+                              )}
+                              {p.shInStatus === 'loading' && <IconSpinner size={11} />}
+                              {p.shInStatus === 'done' && (
+                                <span className="shin-value">
+                                  <button className="shin-toggle on" onClick={() => handleClearShIn(d.uri, p.uri)} title="Disable sh:in for this predicate" />
+                                  {p.shIn === null ? '—' : <span className="datatype-badge shin">({p.shIn.length})</span>}
+                                </span>
+                              )}
+                              {p.shInStatus === 'error' && <span className="datatype-badge error">error</span>}
+                            </td>
 
-                        <td className="num">{p.count.toLocaleString()}</td>
+                            <td className="num">{p.count.toLocaleString()}</td>
 
-                        <td className="num">
-                          {p.distinctObjectsStatus === 'loading' && <IconSpinner size={11} />}
-                          {p.distinctObjectsStatus === 'done' && (p.distinctObjects?.toLocaleString() ?? '—')}
-                          {p.distinctObjectsStatus === 'error' && <span className="datatype-badge error">error</span>}
-                        </td>
-                      </tr>
+                            <td className="num">
+                              {p.distinctObjectsStatus === 'loading' && <IconSpinner size={11} />}
+                              {p.distinctObjectsStatus === 'done' && (p.distinctObjects?.toLocaleString() ?? '—')}
+                              {p.distinctObjectsStatus === 'error' && <span className="datatype-badge error">error</span>}
+                            </td>
+                          </tr>
+                        ))}
+                      </Fragment>
                     ))}
                   </tbody>
                 </table>
