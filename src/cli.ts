@@ -12,30 +12,35 @@ import {
   fetchTotalTriples,
 } from './queries'
 import { generateTurtle } from './turtle'
+import { generateSummary } from './summary'
 import type { ClassData, Predicate } from './types'
 
-function parseArgs(argv: string[]): { endpoint: string; outputDir: string | null } {
+function parseArgs(argv: string[]): { endpoint: string; outputDir: string | null; summary: boolean } {
   const args = argv.slice(2)
   let endpoint: string | null = null
   let outputDir: string | null = null
+  let summary = false
 
   for (let i = 0; i < args.length; i++) {
     if ((args[i] === '-o' || args[i] === '--output') && args[i + 1]) {
       outputDir = args[++i]
+    } else if (args[i] === '-s' || args[i] === '--summary') {
+      summary = true
     } else if (!args[i].startsWith('-')) {
       endpoint = args[i]
     }
   }
 
   if (!endpoint) {
-    console.error('Usage: shapetrospection <endpoint> [-o output_dir]')
+    console.error('Usage: shapetrospection <endpoint> [-o output_dir] [-s]')
     console.error('')
     console.error('  endpoint            SPARQL endpoint URL')
-    console.error('  -o, --output <dir>  Write shapes.ttl here (default: stdout)')
+    console.error('  -o, --output <dir>  Write output here (default: stdout)')
+    console.error('  -s, --summary       Print a summary table instead of Turtle')
     process.exit(1)
   }
 
-  return { endpoint, outputDir }
+  return { endpoint, outputDir, summary }
 }
 
 async function enrichPredicate(endpoint: string, classUri: string, p: Predicate): Promise<Predicate> {
@@ -98,7 +103,7 @@ async function processClass(endpoint: string, classUri: string): Promise<ClassDa
 }
 
 async function main() {
-  const { endpoint, outputDir } = parseArgs(process.argv)
+  const { endpoint, outputDir, summary } = parseArgs(process.argv)
 
   console.error(`Connecting to ${endpoint}`)
 
@@ -117,16 +122,28 @@ async function main() {
     classDataList.push(await processClass(endpoint, classUri))
   }
 
-  console.error('Generating shapes…')
-  const turtle = generateTurtle(endpoint, classDataList, totalTriples)
-
-  if (outputDir) {
-    mkdirSync(outputDir, { recursive: true })
-    const outPath = join(outputDir, 'shapes.ttl')
-    writeFileSync(outPath, turtle, 'utf-8')
-    console.error(`Written to ${outPath}`)
+  if (summary) {
+    console.error('Generating summary…')
+    const text = generateSummary(endpoint, classDataList, totalTriples)
+    if (outputDir) {
+      mkdirSync(outputDir, { recursive: true })
+      const outPath = join(outputDir, 'summary.txt')
+      writeFileSync(outPath, text, 'utf-8')
+      console.error(`Written to ${outPath}`)
+    } else {
+      process.stdout.write(text + '\n')
+    }
   } else {
-    process.stdout.write(turtle + '\n')
+    console.error('Generating shapes…')
+    const turtle = generateTurtle(endpoint, classDataList, totalTriples)
+    if (outputDir) {
+      mkdirSync(outputDir, { recursive: true })
+      const outPath = join(outputDir, 'shapes.ttl')
+      writeFileSync(outPath, turtle, 'utf-8')
+      console.error(`Written to ${outPath}`)
+    } else {
+      process.stdout.write(turtle + '\n')
+    }
   }
 }
 

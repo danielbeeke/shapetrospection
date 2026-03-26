@@ -217,11 +217,11 @@ function generateTurtle(endpoint, classDataList, totalTriples) {
   for (const { uri: classUri, predicates, distinctSubjects } of classDataList) {
     const lastSep = Math.max(classUri.lastIndexOf("#"), classUri.lastIndexOf("/"));
     const ns = classUri.substring(0, lastSep + 1);
-    const localName = classUri.substring(lastSep + 1);
-    const nodeShapeUri = `${ns}${localName}Shape`;
+    const localName2 = classUri.substring(lastSep + 1);
+    const nodeShapeUri = `${ns}${localName2}Shape`;
     const propShapes = predicates.map((p) => {
       const predLocal = p.uri.split(/[#/]/).pop() ?? "property";
-      return { uri: `${ns}${localName}Shape-${predLocal}`, p };
+      return { uri: `${ns}${localName2}Shape-${predLocal}`, p };
     });
     lines.push(`<${nodeShapeUri}>`);
     lines.push(`    a sh:NodeShape ;`);
@@ -248,26 +248,101 @@ function generateTurtle(endpoint, classDataList, totalTriples) {
   return lines.join("\n");
 }
 
+// src/summary.ts
+function localName(uri) {
+  const sep = Math.max(uri.lastIndexOf("#"), uri.lastIndexOf("/"));
+  return sep >= 0 ? uri.substring(sep + 1) : uri;
+}
+function fmt(n) {
+  return n != null ? n.toLocaleString("en-US") : "\u2014";
+}
+function pad(s, width, right = false) {
+  return right ? s.padStart(width) : s.padEnd(width);
+}
+function generateSummary(endpoint, classDataList, totalTriples) {
+  const lines = [];
+  lines.push(`Endpoint: ${endpoint}`);
+  if (totalTriples !== null) {
+    lines.push(`Total triples: ${fmt(totalTriples)}`);
+  }
+  lines.push("");
+  const classCol = "Class";
+  const instCol = "Instances";
+  const propsCol = "Properties";
+  const triplesCol = "Triples";
+  const classRows = [];
+  for (const d of classDataList) {
+    const predTriples = d.predicates.reduce((s, p) => s + p.count, 0);
+    const classRow = {
+      name: localName(d.uri),
+      instances: fmt(d.distinctSubjects),
+      props: String(d.predicates.length),
+      triples: fmt(predTriples)
+    };
+    const predRows = d.predicates.map((p) => {
+      const parts = [];
+      if (p.minCountStatus === "done" && p.minCount !== void 0)
+        parts.push(`min=${p.minCount}`);
+      if (p.maxCountStatus === "done" && p.maxCount !== void 0 && p.maxCount > 0)
+        parts.push(`max=${p.maxCount}`);
+      return {
+        name: `  ${localName(p.uri)}`,
+        triples: fmt(p.count),
+        cardinality: parts.join(" ")
+      };
+    });
+    classRows.push({ classRow, predRows });
+  }
+  const allNames = [classCol, ...classRows.flatMap((r) => [r.classRow.name, ...r.predRows.map((p) => p.name)])];
+  const nameW = Math.max(...allNames.map((s) => s.length));
+  const instW = Math.max(instCol.length, ...classRows.map((r) => r.classRow.instances.length));
+  const propsW = Math.max(propsCol.length, ...classRows.map((r) => r.classRow.props.length));
+  const tripW = Math.max(triplesCol.length, ...classRows.flatMap((r) => [r.classRow.triples, ...r.predRows.map((p) => p.triples)]).map((s) => s.length));
+  const header = `${pad(classCol, nameW)}  ${pad(instCol, instW, true)}  ${pad(propsCol, propsW, true)}  ${pad(triplesCol, tripW, true)}`;
+  lines.push(header);
+  lines.push("\u2500".repeat(header.length));
+  for (const { classRow, predRows } of classRows) {
+    lines.push(
+      `${pad(classRow.name, nameW)}  ${pad(classRow.instances, instW, true)}  ${pad(classRow.props, propsW, true)}  ${pad(classRow.triples, tripW, true)}`
+    );
+    for (const pr of predRows) {
+      const cardSuffix = pr.cardinality ? `  ${pr.cardinality}` : "";
+      lines.push(
+        `${pad(pr.name, nameW)}  ${pad("", instW)}  ${pad("", propsW)}  ${pad(pr.triples, tripW, true)}${cardSuffix}`
+      );
+    }
+  }
+  const totalInstances = classDataList.reduce((s, d) => s + (d.distinctSubjects ?? 0), 0);
+  const totalProps = classDataList.reduce((s, d) => s + d.predicates.length, 0);
+  lines.push("");
+  lines.push(`Totals: ${classDataList.length} classes, ${fmt(totalInstances)} instances, ${totalProps} properties`);
+  return lines.join("\n");
+}
+
 // src/cli.ts
 function parseArgs(argv) {
   const args = argv.slice(2);
   let endpoint = null;
   let outputDir = null;
+  let summary = false;
   for (let i = 0; i < args.length; i++) {
     if ((args[i] === "-o" || args[i] === "--output") && args[i + 1]) {
       outputDir = args[++i];
+    } else if (args[i] === "-s" || args[i] === "--summary") {
+      summary = true;
     } else if (!args[i].startsWith("-")) {
       endpoint = args[i];
     }
   }
   if (!endpoint) {
-    console.error("Usage: shapetrospection <endpoint> [-o output_dir]");
+    console.error("Usage: shapetrospection <endpoint> [-o output_dir] [-s]");
     console.error("");
     console.error("  endpoint            SPARQL endpoint URL");
-    console.error("  -o, --output <dir>  Write shapes.ttl here (default: stdout)");
+    console.error("  -o, --output <dir>  Write output here (default: stdout)");
+    console.error("  -s, --summary       Print a summary table instead of Turtle");
     process.exit(1);
   }
-  return { endpoint, outputDir };
+  return { endpoint, outputDir, summary };
 }
 async function enrichPredicate(endpoint, classUri, p) {
   const [variants, nodeKinds, minCount, maxCount, distinctObjects] = await Promise.all([
@@ -325,7 +400,7 @@ async function processClass(endpoint, classUri) {
   };
 }
 async function main() {
-  const { endpoint, outputDir } = parseArgs(process.argv);
+  const { endpoint, outputDir, summary } = parseArgs(process.argv);
   console.error(`Connecting to ${endpoint}`);
   const [classes, totalTriples] = await Promise.all([
     fetchClasses(endpoint),
@@ -339,15 +414,28 @@ async function main() {
     console.error(`[${i + 1}/${classes.length}] <${classUri}>`);
     classDataList.push(await processClass(endpoint, classUri));
   }
-  console.error("Generating shapes\u2026");
-  const turtle = generateTurtle(endpoint, classDataList, totalTriples);
-  if (outputDir) {
-    mkdirSync(outputDir, { recursive: true });
-    const outPath = join(outputDir, "shapes.ttl");
-    writeFileSync(outPath, turtle, "utf-8");
-    console.error(`Written to ${outPath}`);
+  if (summary) {
+    console.error("Generating summary\u2026");
+    const text = generateSummary(endpoint, classDataList, totalTriples);
+    if (outputDir) {
+      mkdirSync(outputDir, { recursive: true });
+      const outPath = join(outputDir, "summary.txt");
+      writeFileSync(outPath, text, "utf-8");
+      console.error(`Written to ${outPath}`);
+    } else {
+      process.stdout.write(text + "\n");
+    }
   } else {
-    process.stdout.write(turtle + "\n");
+    console.error("Generating shapes\u2026");
+    const turtle = generateTurtle(endpoint, classDataList, totalTriples);
+    if (outputDir) {
+      mkdirSync(outputDir, { recursive: true });
+      const outPath = join(outputDir, "shapes.ttl");
+      writeFileSync(outPath, turtle, "utf-8");
+      console.error(`Written to ${outPath}`);
+    } else {
+      process.stdout.write(turtle + "\n");
+    }
   }
 }
 main().catch((err) => {
