@@ -96,7 +96,14 @@ type Tab = 'output' | 'predicates'
 
 const CLASSES_QUERY = `SELECT DISTINCT ?class WHERE { [] a ?class . } ORDER BY ?class`
 
-async function sparqlQuery(endpoint: string, query: string): Promise<{ [k: string]: { value: string } }[]> {
+interface SparqlTerm {
+  type: 'uri' | 'literal' | 'bnode'
+  value: string
+  datatype?: string
+  'xml:lang'?: string
+}
+
+async function sparqlQuery(endpoint: string, query: string): Promise<{ [k: string]: SparqlTerm }[]> {
   const url = new URL(endpoint)
   url.searchParams.set('query', query)
   const res = await fetch(url.toString(), {
@@ -118,7 +125,7 @@ export interface Predicate {
   uri: string
   count: number
   datatypeStatus: FetchStatus
-  datatype?: string       // winning xsd:* URI, or 'IRI' for object properties
+  datatype?: string[]     // all observed datatypes; 'IRI' used for object properties
   nodeKindStatus: FetchStatus
   nodeKind?: string       // sh:IRI | sh:Literal | sh:BlankNode
   minCountStatus: FetchStatus
@@ -127,6 +134,8 @@ export interface Predicate {
   maxCount?: number
   distinctObjectsStatus: FetchStatus
   distinctObjects?: number
+  shInStatus: FetchStatus
+  shIn?: string[] | null   // null = too many values; string[] = Turtle-serialised terms
 }
 
 async function fetchPredicates(endpoint: string, classUri: string): Promise<Predicate[]> {
@@ -147,10 +156,11 @@ ORDER BY DESC(?count)`
     minCountStatus: 'idle' as const,
     maxCountStatus: 'idle' as const,
     distinctObjectsStatus: 'idle' as const,
+    shInStatus: 'idle' as const,
   }))
 }
 
-async function fetchDatatype(endpoint: string, classUri: string, predicateUri: string): Promise<string> {
+async function fetchDatatype(endpoint: string, classUri: string, predicateUri: string): Promise<string[]> {
   const query = `SELECT ?datatype (COUNT(?o) AS ?count)
 WHERE {
   ?s a <${classUri}> ;
@@ -159,12 +169,10 @@ WHERE {
   FILTER(BOUND(?datatype))
 }
 GROUP BY ?datatype
-ORDER BY DESC(?count)
-LIMIT 1`
+ORDER BY DESC(?count)`
   const rows = await sparqlQuery(endpoint, query)
-  if (rows.length === 0) return 'unknown'
-  const val = rows[0].datatype.value
-  return val === 'urn:shapetrospection:IRI' ? 'IRI' : val
+  if (rows.length === 0) return ['unknown']
+  return rows.map(r => r.datatype.value === 'urn:shapetrospection:IRI' ? 'IRI' : r.datatype.value)
 }
 
 async function fetchNodeKind(endpoint: string, classUri: string, predicateUri: string): Promise<string> {
@@ -210,6 +218,34 @@ WHERE {
   const rows = await sparqlQuery(endpoint, query)
   if (rows.length === 0 || !rows[0].maxCount) return 0
   return parseInt(rows[0].maxCount.value, 10)
+}
+
+const SH_IN_LIMIT = 10
+
+function termToTurtle(term: SparqlTerm): string {
+  if (term.type === 'uri') return `<${term.value}>`
+  if (term.datatype) {
+    const dt = term.datatype.startsWith(XSD)
+      ? `xsd:${term.datatype.slice(XSD.length)}`
+      : `<${term.datatype}>`
+    return `"${term.value}"^^${dt}`
+  }
+  if (term['xml:lang']) return `"${term.value}"@${term['xml:lang']}`
+  return `"${term.value}"`
+}
+
+// Returns serialised Turtle terms, or null if there are too many distinct values
+async function fetchShIn(endpoint: string, classUri: string, predicateUri: string): Promise<string[] | null> {
+  const query = `SELECT DISTINCT ?value
+WHERE {
+  ?s a <${classUri}> ;
+     <${predicateUri}> ?value .
+}
+ORDER BY ?value
+LIMIT ${SH_IN_LIMIT + 1}`
+  const rows = await sparqlQuery(endpoint, query)
+  if (rows.length > SH_IN_LIMIT) return null
+  return rows.map(r => termToTurtle(r.value))
 }
 
 async function fetchDistinctObjects(endpoint: string, classUri: string, predicateUri: string): Promise<number> {
@@ -387,11 +423,12 @@ function generateTurtle(classUri: string, predicates: Predicate[], distinctSubje
     if (p.nodeKindStatus === 'done' && p.nodeKind && p.nodeKind !== 'unknown')
       attrs.push(`    sh:nodeKind ${p.nodeKind}`)
 
-    if (p.datatypeStatus === 'done' && p.datatype && p.datatype !== 'unknown' && p.datatype !== 'IRI') {
-      const dt = p.datatype.startsWith(XSD)
-        ? `xsd:${p.datatype.slice(XSD.length)}`
-        : `<${p.datatype}>`
-      attrs.push(`    sh:datatype ${dt}`)
+    if (p.datatypeStatus === 'done' && p.datatype?.length === 1) {
+      const raw = p.datatype[0]
+      if (raw !== 'unknown' && raw !== 'IRI') {
+        const dt = raw.startsWith(XSD) ? `xsd:${raw.slice(XSD.length)}` : `<${raw}>`
+        attrs.push(`    sh:datatype ${dt}`)
+      }
     }
 
     if (p.minCountStatus === 'done' && p.minCount !== undefined && p.minCount > 0)
@@ -399,6 +436,9 @@ function generateTurtle(classUri: string, predicates: Predicate[], distinctSubje
 
     if (p.maxCountStatus === 'done' && p.maxCount !== undefined && p.maxCount > 0)
       attrs.push(`    sh:maxCount ${p.maxCount}`)
+
+    if (p.shInStatus === 'done' && Array.isArray(p.shIn) && p.shIn.length > 0)
+      attrs.push(`    sh:in ( ${p.shIn.join(' ')} )`)
 
     attrs.push(`    void:triples ${p.count}`)
 
@@ -556,6 +596,7 @@ export default function App() {
         await run('minCountStatus',         'minCount',         () => fetchMinCount(endpoint, targetClass, p.uri))
         await run('maxCountStatus',         'maxCount',         () => fetchMaxCount(endpoint, targetClass, p.uri))
         await run('distinctObjectsStatus',  'distinctObjects',  () => fetchDistinctObjects(endpoint, targetClass, p.uri))
+        await run('shInStatus',             'shIn',             () => fetchShIn(endpoint, targetClass, p.uri))
       }
     }
 
@@ -703,60 +744,77 @@ export default function App() {
             )}
             {!predicatesLoading && predicates.length > 0 && (
               <div className="predicates-list">
-                <div className="predicates-header-row">
-                  <span>Predicate URI</span>
-                  <span>sh:nodeKind</span>
-                  <span>sh:datatype</span>
-                  <span>sh:minCount</span>
-                  <span>sh:maxCount</span>
-                  <span>void:triples</span>
-                  <span>void:distinctObjects</span>
-                </div>
-                {predicates.map(p => (
-                  <div key={p.uri} className="predicate-row">
-                    <span className="predicate-uri">{p.uri}</span>
+                <table className="predicates-table">
+                  <thead>
+                    <tr>
+                      <th>Predicate URI</th>
+                      <th>sh:nodeKind</th>
+                      <th>sh:datatype</th>
+                      <th className="num">sh:minCount</th>
+                      <th className="num">sh:maxCount</th>
+                      <th className="num">sh:in</th>
+                      <th className="num">void:triples</th>
+                      <th className="num">void:distinctObjects</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {predicates.map(p => (
+                      <tr key={p.uri}>
+                        <td className="predicate-uri">{p.uri}</td>
 
-                    <span className="predicate-cell">
-                      {p.nodeKindStatus === 'loading' && <IconSpinner size={11} />}
-                      {p.nodeKindStatus === 'done' && p.nodeKind && (
-                        <span className={`datatype-badge ${p.nodeKind === 'sh:IRI' ? 'iri' : p.nodeKind === 'unknown' ? 'unknown' : 'literal'}`}>
-                          {p.nodeKind === 'unknown' ? '—' : p.nodeKind}
-                        </span>
-                      )}
-                      {p.nodeKindStatus === 'error' && <span className="datatype-badge error">error</span>}
-                    </span>
+                        <td>
+                          {p.nodeKindStatus === 'loading' && <IconSpinner size={11} />}
+                          {p.nodeKindStatus === 'done' && p.nodeKind && (
+                            <span className={`datatype-badge ${p.nodeKind === 'sh:IRI' ? 'iri' : p.nodeKind === 'unknown' ? 'unknown' : 'literal'}`}>
+                              {p.nodeKind === 'unknown' ? '—' : p.nodeKind}
+                            </span>
+                          )}
+                          {p.nodeKindStatus === 'error' && <span className="datatype-badge error">error</span>}
+                        </td>
 
-                    <span className="predicate-cell">
-                      {p.datatypeStatus === 'loading' && <IconSpinner size={11} />}
-                      {p.datatypeStatus === 'done' && p.datatype && (
-                        <span className={`datatype-badge ${p.datatype === 'IRI' ? 'iri' : p.datatype === 'unknown' ? 'unknown' : ''}`}>
-                          {p.datatype === 'IRI' ? '—' : p.datatype === 'unknown' ? '—' : p.datatype.replace('http://www.w3.org/2001/XMLSchema#', 'xsd:')}
-                        </span>
-                      )}
-                      {p.datatypeStatus === 'error' && <span className="datatype-badge error">error</span>}
-                    </span>
+                        <td className="predicate-datatypes">
+                          {p.datatypeStatus === 'loading' && <IconSpinner size={11} />}
+                          {p.datatypeStatus === 'done' && p.datatype?.map(dt => (
+                            <span key={dt} className={`datatype-badge ${dt === 'IRI' ? 'iri' : dt === 'unknown' ? 'unknown' : ''}`}>
+                              {dt === 'IRI' || dt === 'unknown' ? '—' : dt.replace(XSD, 'xsd:')}
+                            </span>
+                          ))}
+                          {p.datatypeStatus === 'error' && <span className="datatype-badge error">error</span>}
+                        </td>
 
-                    <span className="predicate-cell predicate-count">
-                      {p.minCountStatus === 'loading' && <IconSpinner size={11} />}
-                      {p.minCountStatus === 'done' && <span>{p.minCount}</span>}
-                      {p.minCountStatus === 'error' && <span className="datatype-badge error">error</span>}
-                    </span>
+                        <td className="num">
+                          {p.minCountStatus === 'loading' && <IconSpinner size={11} />}
+                          {p.minCountStatus === 'done' && p.minCount}
+                          {p.minCountStatus === 'error' && <span className="datatype-badge error">error</span>}
+                        </td>
 
-                    <span className="predicate-cell predicate-count">
-                      {p.maxCountStatus === 'loading' && <IconSpinner size={11} />}
-                      {p.maxCountStatus === 'done' && <span>{p.maxCount || '—'}</span>}
-                      {p.maxCountStatus === 'error' && <span className="datatype-badge error">error</span>}
-                    </span>
+                        <td className="num">
+                          {p.maxCountStatus === 'loading' && <IconSpinner size={11} />}
+                          {p.maxCountStatus === 'done' && (p.maxCount || '—')}
+                          {p.maxCountStatus === 'error' && <span className="datatype-badge error">error</span>}
+                        </td>
 
-                    <span className="predicate-count">{p.count.toLocaleString()}</span>
+                        <td className="num">
+                          {p.shInStatus === 'loading' && <IconSpinner size={11} />}
+                          {p.shInStatus === 'done' && (
+                            p.shIn === null
+                              ? '—'
+                              : <span className="datatype-badge shin">({p.shIn.length})</span>
+                          )}
+                          {p.shInStatus === 'error' && <span className="datatype-badge error">error</span>}
+                        </td>
 
-                    <span className="predicate-cell predicate-count">
-                      {p.distinctObjectsStatus === 'loading' && <IconSpinner size={11} />}
-                      {p.distinctObjectsStatus === 'done' && <span>{p.distinctObjects?.toLocaleString() ?? '—'}</span>}
-                      {p.distinctObjectsStatus === 'error' && <span className="datatype-badge error">error</span>}
-                    </span>
-                  </div>
-                ))}
+                        <td className="num">{p.count.toLocaleString()}</td>
+
+                        <td className="num">
+                          {p.distinctObjectsStatus === 'loading' && <IconSpinner size={11} />}
+                          {p.distinctObjectsStatus === 'done' && (p.distinctObjects?.toLocaleString() ?? '—')}
+                          {p.distinctObjectsStatus === 'error' && <span className="datatype-badge error">error</span>}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             )}
           </div>
