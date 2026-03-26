@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 // src/cli.ts
-import { mkdirSync, writeFileSync } from "fs";
-import { join } from "path";
+import { mkdirSync as mkdirSync2, writeFileSync as writeFileSync2 } from "fs";
+import { join as join2 } from "path";
 import { progress } from "@clack/prompts";
 
 // src/sparql.ts
@@ -381,30 +381,68 @@ function generateSummary(endpoint, classDataList, totalTriples) {
   return lines.join("\n");
 }
 
+// src/cache.ts
+import { createHash } from "crypto";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
+import { homedir } from "os";
+import { join } from "path";
+function cacheDir() {
+  const base = process.env.XDG_CACHE_HOME || join(homedir(), ".cache");
+  return join(base, "shapetrospection");
+}
+function cacheKey(endpoint) {
+  return createHash("sha256").update(endpoint).digest("hex");
+}
+function cachePath(endpoint) {
+  return join(cacheDir(), `${cacheKey(endpoint)}.json`);
+}
+function readCache(endpoint) {
+  const path = cachePath(endpoint);
+  if (!existsSync(path)) return null;
+  try {
+    const raw = readFileSync(path, "utf-8");
+    const data = JSON.parse(raw);
+    if (data.endpoint !== endpoint) return null;
+    return data;
+  } catch {
+    return null;
+  }
+}
+function writeCache(data) {
+  const dir = cacheDir();
+  mkdirSync(dir, { recursive: true });
+  const path = cachePath(data.endpoint);
+  writeFileSync(path, JSON.stringify(data), "utf-8");
+}
+
 // src/cli.ts
 function parseArgs(argv) {
   const args = argv.slice(2);
   let endpoint = null;
   let outputDir = null;
   let summary = false;
+  let forceRefresh = false;
   for (let i = 0; i < args.length; i++) {
     if ((args[i] === "-o" || args[i] === "--output") && args[i + 1]) {
       outputDir = args[++i];
     } else if (args[i] === "-s" || args[i] === "--summary") {
       summary = true;
+    } else if (args[i] === "-f" || args[i] === "--force-refresh") {
+      forceRefresh = true;
     } else if (!args[i].startsWith("-")) {
       endpoint = args[i];
     }
   }
   if (!endpoint) {
-    console.error("Usage: shapetrospection <endpoint> [-o output_dir] [-s]");
+    console.error("Usage: shapetrospection <endpoint> [-o output_dir] [-s] [-f]");
     console.error("");
     console.error("  endpoint            SPARQL endpoint URL");
     console.error("  -o, --output <file> Write output here (default: stdout)");
     console.error("  -s, --summary       Print a summary table instead of Turtle");
+    console.error("  -f, --force-refresh Ignore cached data and re-fetch from endpoint");
     process.exit(1);
   }
-  return { endpoint, outputDir, summary };
+  return { endpoint, outputDir, summary, forceRefresh };
 }
 async function enrichPredicate(endpoint, classUri, p) {
   const [variants, nodeKinds, minCount, maxCount, distinctObjects] = await Promise.all([
@@ -461,24 +499,46 @@ async function processClass(endpoint, classUri) {
     predicates
   };
 }
+function formatAge(cachedAt) {
+  const ms = Date.now() - new Date(cachedAt).getTime();
+  const secs = Math.floor(ms / 1e3);
+  if (secs < 60) return `${secs}s ago`;
+  const mins = Math.floor(secs / 60);
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ago`;
+}
 async function main() {
-  const { endpoint, outputDir: outputPath, summary } = parseArgs(process.argv);
-  console.error(`Connecting to ${endpoint}`);
-  const [classes, totalTriples] = await Promise.all([
-    fetchClasses(endpoint),
-    fetchTotalTriples(endpoint).catch(() => null)
-  ]);
-  const triplesLabel = totalTriples !== null ? `, ${totalTriples.toLocaleString()} total triples` : "";
-  console.error(`Found ${classes.length} classes${triplesLabel}`);
-  const classDataList = [];
-  const p = progress({ max: Math.max(classes.length, 1) });
-  p.start("Indexing classes");
-  for (let i = 0; i < classes.length; i++) {
-    const classUri = classes[i];
-    p.advance(1, `Processing ${i + 1}/${classes.length}: ${classUri}`);
-    classDataList.push(await processClass(endpoint, classUri));
+  const { endpoint, outputDir: outputPath, summary, forceRefresh } = parseArgs(process.argv);
+  let classDataList;
+  let totalTriples;
+  const cached = !forceRefresh ? readCache(endpoint) : null;
+  if (cached) {
+    console.error(`Using cached data for ${endpoint} (${formatAge(cached.cachedAt)})`);
+    classDataList = cached.classDataList;
+    totalTriples = cached.totalTriples;
+  } else {
+    console.error(`Connecting to ${endpoint}`);
+    const [classes, tt] = await Promise.all([
+      fetchClasses(endpoint),
+      fetchTotalTriples(endpoint).catch(() => null)
+    ]);
+    totalTriples = tt;
+    const triplesLabel = totalTriples !== null ? `, ${totalTriples.toLocaleString()} total triples` : "";
+    console.error(`Found ${classes.length} classes${triplesLabel}`);
+    classDataList = [];
+    const p = progress({ max: Math.max(classes.length, 1) });
+    p.start("Indexing classes");
+    for (let i = 0; i < classes.length; i++) {
+      const classUri = classes[i];
+      p.advance(1, `Processing ${i + 1}/${classes.length}: ${classUri}`);
+      classDataList.push(await processClass(endpoint, classUri));
+    }
+    p.stop("Class indexing complete");
+    writeCache({ endpoint, totalTriples, classDataList, cachedAt: (/* @__PURE__ */ new Date()).toISOString() });
   }
-  p.stop("Class indexing complete");
   if (summary) {
     console.error("Generating summary\u2026");
     const text = generateSummary(endpoint, classDataList, totalTriples);
@@ -488,12 +548,12 @@ async function main() {
       try {
         const stat = await import("fs/promises").then((fs) => fs.stat(outputPath));
         if (stat.isDirectory()) {
-          outPath = join(outputPath, "summary.txt");
+          outPath = join2(outputPath, "summary.txt");
         }
       } catch {
-        mkdirSync(join(outputPath, ".."), { recursive: true });
+        mkdirSync2(join2(outputPath, ".."), { recursive: true });
       }
-      writeFileSync(outPath, text, "utf-8");
+      writeFileSync2(outPath, text, "utf-8");
       console.error(`Written to ${outPath}`);
     } else {
       process.stdout.write(text + "\n");
@@ -506,12 +566,12 @@ async function main() {
       try {
         const stat = await import("fs/promises").then((fs) => fs.stat(outputPath));
         if (stat.isDirectory()) {
-          outPath = join(outputPath, "shapes.ttl");
+          outPath = join2(outputPath, "shapes.ttl");
         }
       } catch {
-        mkdirSync(join(outputPath, ".."), { recursive: true });
+        mkdirSync2(join2(outputPath, ".."), { recursive: true });
       }
-      writeFileSync(outPath, turtle, "utf-8");
+      writeFileSync2(outPath, turtle, "utf-8");
       console.error(`Written to ${outPath}`);
     } else {
       process.stdout.write(turtle + "\n");
