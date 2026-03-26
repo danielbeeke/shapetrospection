@@ -22,6 +22,8 @@ var XSD = "http://www.w3.org/2001/XMLSchema#";
 var RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 var SH = "http://www.w3.org/ns/shacl#";
 var VOID = "http://rdfs.org/ns/void#";
+var QB = "http://purl.org/linked-data/cube#";
+var SHAPETROSPECTION = "urn:shapetrospection:";
 
 // src/queries.ts
 var CLASSES_QUERY = `SELECT DISTINCT ?class WHERE { [] a ?class . } ORDER BY ?class`;
@@ -152,27 +154,50 @@ function dtTurtle(uri) {
   if (uri.startsWith(RDF)) return `rdf:${uri.slice(RDF.length)}`;
   return `<${uri}>`;
 }
-function propertyShapeAttrs(p) {
+function variantSuffix(datatype) {
+  if (datatype === "IRI") return "IRI";
+  if (datatype === "BlankNode") return "BlankNode";
+  const sep = Math.max(datatype.lastIndexOf("#"), datatype.lastIndexOf("/"));
+  return sep >= 0 ? datatype.substring(sep + 1) : datatype;
+}
+function buildVariantEntry(propShapeUri, v, maxTriples) {
+  const uri = `${propShapeUri}-${variantSuffix(v.datatype)}`;
+  const defLines = [];
+  const deactivated = v.triples < maxTriples;
+  if (v.datatype === "IRI") {
+    defLines.push(`    sh:nodeKind sh:IRI`);
+  } else if (v.datatype === "BlankNode") {
+    defLines.push(`    sh:nodeKind sh:BlankNode`);
+  } else {
+    defLines.push(`    sh:nodeKind sh:Literal`);
+    defLines.push(`    sh:datatype ${dtTurtle(v.datatype)}`);
+  }
+  if (deactivated) defLines.push(`    sh:deactivated true`);
+  return { skolemUri: uri, triples: v.triples, distinctObjects: v.distinctObjects, defLines };
+}
+function propertyShapeAttrs(p, propShapeUri) {
   const attrs = [];
+  const variantDefs = [];
+  const variantObservations = [];
   if (p.variantsStatus === "done" && p.variants && p.variants.length > 0) {
     const iri = p.variants.filter((v) => v.datatype === "IRI");
     const bn = p.variants.filter((v) => v.datatype === "BlankNode");
     const lit = p.variants.filter((v) => v.datatype !== "IRI" && v.datatype !== "BlankNode");
     const nodeKindCount = [iri.length > 0, bn.length > 0, lit.length > 0].filter(Boolean).length;
     if (nodeKindCount > 1) {
-      const all = [
-        ...iri.map((v) => ({ triples: v.triples, entry: `sh:nodeKind sh:IRI ; void:triples ${v.triples} ; void:distinctObjects ${v.distinctObjects}` })),
-        ...bn.map((v) => ({ triples: v.triples, entry: `sh:nodeKind sh:BlankNode ; void:triples ${v.triples}` })),
-        ...lit.map((v) => ({ triples: v.triples, entry: `sh:nodeKind sh:Literal ; sh:datatype ${dtTurtle(v.datatype)} ; void:triples ${v.triples} ; void:distinctObjects ${v.distinctObjects}` }))
-      ].sort((a, b) => b.triples - a.triples);
-      const maxT = all[0].triples;
-      const entries = all.map((v) => {
-        const deactivated = v.triples < maxT ? " ; sh:deactivated true" : "";
-        return `        [ ${v.entry}${deactivated} ]`;
-      });
+      const allVariants = [...iri, ...bn, ...lit].sort((a, b) => b.triples - a.triples);
+      const maxT = allVariants[0].triples;
+      const entries = allVariants.map((v) => buildVariantEntry(propShapeUri, v, maxT));
+      const orRefs = entries.map((e) => `        <${e.skolemUri}>`);
       attrs.push(`    sh:or (
-${entries.join(" ,\n")}
+${orRefs.join("\n")}
     )`);
+      for (const e of entries) {
+        variantDefs.push("");
+        variantDefs.push(`<${e.skolemUri}>`);
+        e.defLines.forEach((l, i) => variantDefs.push(l + (i < e.defLines.length - 1 ? " ;" : " .")));
+        variantObservations.push({ uri: e.skolemUri, triples: e.triples, distinctObjects: e.distinctObjects });
+      }
     } else {
       if (iri.length > 0) attrs.push(`    sh:nodeKind sh:IRI`);
       else if (bn.length > 0) attrs.push(`    sh:nodeKind sh:BlankNode`);
@@ -180,14 +205,19 @@ ${entries.join(" ,\n")}
       if (lit.length === 1) {
         attrs.push(`    sh:datatype ${dtTurtle(lit[0].datatype)}`);
       } else if (lit.length > 1) {
-        const maxT = Math.max(...lit.map((v) => v.triples));
-        const entries = lit.map((v) => {
-          const deactivated = v.triples < maxT ? " ; sh:deactivated true" : "";
-          return `        [ sh:datatype ${dtTurtle(v.datatype)} ; void:triples ${v.triples} ; void:distinctObjects ${v.distinctObjects}${deactivated} ]`;
-        });
+        const sorted = [...lit].sort((a, b) => b.triples - a.triples);
+        const maxT = sorted[0].triples;
+        const entries = sorted.map((v) => buildVariantEntry(propShapeUri, v, maxT));
+        const orRefs = entries.map((e) => `        <${e.skolemUri}>`);
         attrs.push(`    sh:or (
-${entries.join(" ,\n")}
+${orRefs.join("\n")}
     )`);
+        for (const e of entries) {
+          variantDefs.push("");
+          variantDefs.push(`<${e.skolemUri}>`);
+          e.defLines.forEach((l, i) => variantDefs.push(l + (i < e.defLines.length - 1 ? " ;" : " .")));
+          variantObservations.push({ uri: e.skolemUri, triples: e.triples, distinctObjects: e.distinctObjects });
+        }
       }
     }
   }
@@ -197,23 +227,30 @@ ${entries.join(" ,\n")}
     attrs.push(`    sh:maxCount ${p.maxCount}`);
   if (p.shInStatus === "done" && Array.isArray(p.shIn) && p.shIn.length > 0)
     attrs.push(`    sh:in ( ${p.shIn.join(" ")} )`);
-  attrs.push(`    void:triples ${p.count}`);
-  if (p.distinctObjectsStatus === "done" && p.distinctObjects !== void 0 && p.distinctObjects > 0)
-    attrs.push(`    void:distinctObjects ${p.distinctObjects}`);
-  return attrs;
+  return { attrs, variantDefs, variantObservations };
+}
+function emitObservation(lines, endpointUri, observed, measures) {
+  lines.push("");
+  lines.push(`[] a qb:Observation ;`);
+  lines.push(`    qb:dataSet <${endpointUri}> ;`);
+  lines.push(`    shapetrospection:observed ${observed} ;`);
+  measures.forEach((m, i) => lines.push(m + (i < measures.length - 1 ? " ;" : " .")));
 }
 function generateTurtle(endpoint, classDataList, totalTriples) {
   const lines = [];
+  const observations = [];
+  const shapes = [];
   lines.push(`@prefix sh:   <${SH}> .`);
   lines.push(`@prefix xsd:  <${XSD}> .`);
   lines.push(`@prefix rdf:  <${RDF}> .`);
   lines.push(`@prefix void: <${VOID}> .`);
+  lines.push(`@prefix qb:   <${QB}> .`);
+  lines.push(`@prefix shapetrospection: <${SHAPETROSPECTION}> .`);
   lines.push("");
   if (totalTriples !== null) {
     lines.push(`<${endpoint}>`);
     lines.push(`    a void:Dataset ;`);
     lines.push(`    void:triples ${totalTriples} .`);
-    lines.push("");
   }
   for (const { uri: classUri, predicates, distinctSubjects } of classDataList) {
     const lastSep = Math.max(classUri.lastIndexOf("#"), classUri.lastIndexOf("/"));
@@ -224,27 +261,51 @@ function generateTurtle(endpoint, classDataList, totalTriples) {
       const predLocal = p.uri.split(/[#/]/).pop() ?? "property";
       return { uri: `${ns}${localName2}Shape-${predLocal}`, p };
     });
-    lines.push(`<${nodeShapeUri}>`);
-    lines.push(`    a sh:NodeShape ;`);
-    const nodeAttrs = [`    sh:targetClass <${classUri}>`];
-    if (distinctSubjects !== null) nodeAttrs.push(`    void:distinctSubjects ${distinctSubjects}`);
-    if (propShapes.length > 0) nodeAttrs.push(`    void:properties ${propShapes.length}`);
-    propShapes.forEach(({ uri }) => nodeAttrs.push(`    sh:property <${uri}>`));
-    nodeAttrs.forEach((a, i) => lines.push(a + (i < nodeAttrs.length - 1 ? " ;" : " .")));
-    for (const { uri, p } of propShapes) {
-      lines.push("");
-      lines.push(`<${uri}>`);
-      lines.push(`    a sh:PropertyShape ;`);
-      lines.push(`    sh:path <${p.uri}> ;`);
-      const attrs = propertyShapeAttrs(p);
-      if (attrs.length > 0) {
-        attrs.forEach((a, i) => lines.push(a + (i < attrs.length - 1 ? " ;" : " .")));
-      } else {
-        lines[lines.length - 1] = lines[lines.length - 1].replace(/ ;$/, " .");
-      }
+    const nodeObsMeasures = [];
+    if (distinctSubjects !== null) nodeObsMeasures.push(`    void:distinctSubjects ${distinctSubjects}`);
+    if (propShapes.length > 0) nodeObsMeasures.push(`    void:properties ${propShapes.length}`);
+    if (nodeObsMeasures.length > 0) {
+      emitObservation(observations, endpoint, `<${nodeShapeUri}>`, nodeObsMeasures);
     }
-    lines.push("");
+    const allVariantDefs = [];
+    for (const { uri, p } of propShapes) {
+      const propObsMeasures = [];
+      propObsMeasures.push(`    void:triples ${p.count}`);
+      if (p.distinctObjectsStatus === "done" && p.distinctObjects !== void 0 && p.distinctObjects > 0)
+        propObsMeasures.push(`    void:distinctObjects ${p.distinctObjects}`);
+      emitObservation(
+        observations,
+        endpoint,
+        `<< <${nodeShapeUri}> sh:property <${uri}> >>`,
+        propObsMeasures
+      );
+      const result = propertyShapeAttrs(p, uri);
+      for (const vo of result.variantObservations) {
+        const voMeasures = [`    void:triples ${vo.triples}`];
+        if (vo.distinctObjects > 0) voMeasures.push(`    void:distinctObjects ${vo.distinctObjects}`);
+        emitObservation(observations, endpoint, `<${vo.uri}>`, voMeasures);
+      }
+      shapes.push("");
+      shapes.push(`<${uri}>`);
+      shapes.push(`    a sh:PropertyShape ;`);
+      shapes.push(`    sh:path <${p.uri}> ;`);
+      if (result.attrs.length > 0) {
+        result.attrs.forEach((a, i) => shapes.push(a + (i < result.attrs.length - 1 ? " ;" : " .")));
+      } else {
+        shapes[shapes.length - 1] = shapes[shapes.length - 1].replace(/ ;$/, " .");
+      }
+      allVariantDefs.push(...result.variantDefs);
+    }
+    shapes.push("");
+    shapes.push(`<${nodeShapeUri}>`);
+    shapes.push(`    a sh:NodeShape ;`);
+    const nodeAttrs = [`    sh:targetClass <${classUri}>`];
+    propShapes.forEach(({ uri }) => nodeAttrs.push(`    sh:property <${uri}>`));
+    nodeAttrs.forEach((a, i) => shapes.push(a + (i < nodeAttrs.length - 1 ? " ;" : " .")));
+    shapes.push(...allVariantDefs);
   }
+  lines.push(...observations);
+  lines.push(...shapes);
   while (lines[lines.length - 1] === "") lines.pop();
   return lines.join("\n");
 }
@@ -418,11 +479,6 @@ async function main() {
     classDataList.push(await processClass(endpoint, classUri));
   }
   p.stop("Class indexing complete");
-  for (let i = 0; i < classes.length; i++) {
-    const classUri = classes[i];
-    console.error(`[${i + 1}/${classes.length}] <${classUri}>`);
-    classDataList.push(await processClass(endpoint, classUri));
-  }
   if (summary) {
     console.error("Generating summary\u2026");
     const text = generateSummary(endpoint, classDataList, totalTriples);
