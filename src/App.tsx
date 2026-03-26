@@ -125,6 +125,8 @@ export interface Predicate {
   minCount?: number
   maxCountStatus: FetchStatus
   maxCount?: number
+  distinctObjectsStatus: FetchStatus
+  distinctObjects?: number
 }
 
 async function fetchPredicates(endpoint: string, classUri: string): Promise<Predicate[]> {
@@ -144,6 +146,7 @@ ORDER BY DESC(?count)`
     nodeKindStatus: 'idle' as const,
     minCountStatus: 'idle' as const,
     maxCountStatus: 'idle' as const,
+    distinctObjectsStatus: 'idle' as const,
   }))
 }
 
@@ -207,6 +210,27 @@ WHERE {
   const rows = await sparqlQuery(endpoint, query)
   if (rows.length === 0 || !rows[0].maxCount) return 0
   return parseInt(rows[0].maxCount.value, 10)
+}
+
+async function fetchDistinctObjects(endpoint: string, classUri: string, predicateUri: string): Promise<number> {
+  const query = `SELECT (COUNT(DISTINCT ?o) AS ?distinctObjects)
+WHERE {
+  ?s a <${classUri}> ;
+     <${predicateUri}> ?o .
+}`
+  const rows = await sparqlQuery(endpoint, query)
+  if (rows.length === 0 || !rows[0].distinctObjects) return 0
+  return parseInt(rows[0].distinctObjects.value, 10)
+}
+
+async function fetchDistinctSubjects(endpoint: string, classUri: string): Promise<number> {
+  const query = `SELECT (COUNT(DISTINCT ?s) AS ?distinctSubjects)
+WHERE {
+  ?s a <${classUri}> .
+}`
+  const rows = await sparqlQuery(endpoint, query)
+  if (rows.length === 0 || !rows[0].distinctSubjects) return 0
+  return parseInt(rows[0].distinctSubjects.value, 10)
 }
 
 // ── ClassAutocomplete ────────────────────────────────
@@ -323,7 +347,7 @@ const XSD  = 'http://www.w3.org/2001/XMLSchema#'
 const SH   = 'http://www.w3.org/ns/shacl#'
 const VOID = 'http://rdfs.org/ns/void#'
 
-function generateTurtle(classUri: string, predicates: Predicate[]): string {
+function generateTurtle(classUri: string, predicates: Predicate[], distinctSubjects: number | null): string {
   const lastSep = Math.max(classUri.lastIndexOf('#'), classUri.lastIndexOf('/'))
   const ns        = classUri.substring(0, lastSep + 1)
   const localName = classUri.substring(lastSep + 1)
@@ -345,15 +369,11 @@ function generateTurtle(classUri: string, predicates: Predicate[]): string {
   // Node shape
   lines.push(`<${nodeShapeUri}>`)
   lines.push(`    a sh:NodeShape ;`)
-  if (propShapes.length === 0) {
-    lines.push(`    sh:targetClass <${classUri}> .`)
-  } else {
-    lines.push(`    sh:targetClass <${classUri}> ;`)
-    propShapes.forEach(({ uri }, i) => {
-      const last = i === propShapes.length - 1
-      lines.push(`    sh:property <${uri}>${last ? ' .' : ' ;'}`)
-    })
-  }
+  const nodeAttrs: string[] = [`    sh:targetClass <${classUri}>`]
+  if (distinctSubjects !== null) nodeAttrs.push(`    void:distinctSubjects ${distinctSubjects}`)
+  if (propShapes.length > 0) nodeAttrs.push(`    void:properties ${propShapes.length}`)
+  propShapes.forEach(({ uri }) => nodeAttrs.push(`    sh:property <${uri}>`))
+  nodeAttrs.forEach((a, i) => lines.push(a + (i < nodeAttrs.length - 1 ? ' ;' : ' .')))
 
   // Property shapes
   for (const { uri, p } of propShapes) {
@@ -381,6 +401,9 @@ function generateTurtle(classUri: string, predicates: Predicate[]): string {
       attrs.push(`    sh:maxCount ${p.maxCount}`)
 
     attrs.push(`    void:triples ${p.count}`)
+
+    if (p.distinctObjectsStatus === 'done' && p.distinctObjects !== undefined && p.distinctObjects > 0)
+      attrs.push(`    void:distinctObjects ${p.distinctObjects}`)
 
     if (attrs.length > 0) {
       attrs.forEach((a, i) => lines.push(a + (i < attrs.length - 1 ? ' ;' : ' .')))
@@ -451,13 +474,15 @@ export default function App() {
   const [predicatesLoading, setPredicatesLoading] = useState(false)
   const [predicatesError, setPredicatesError] = useState<string | null>(null)
 
+  const [distinctSubjects, setDistinctSubjects] = useState<number | null>(null)
+
   const [turtle, setTurtle] = useState<string | null>(null)
 
   // Auto-regenerate turtle whenever predicates are updated
   useEffect(() => {
     if (!targetClass || predicates.length === 0) { setTurtle(null); return }
-    setTurtle(generateTurtle(targetClass, predicates))
-  }, [targetClass, predicates])
+    setTurtle(generateTurtle(targetClass, predicates, distinctSubjects))
+  }, [targetClass, predicates, distinctSubjects])
 
   // Fetch classes whenever endpoint changes
   useEffect(() => {
@@ -476,6 +501,7 @@ export default function App() {
     if (!endpoint || !targetClass) {
       setPredicates([])
       setPredicatesError(null)
+      setDistinctSubjects(null)
       return
     }
     let cancelled = false
@@ -483,6 +509,15 @@ export default function App() {
     async function run() {
       setPredicatesLoading(true)
       setPredicatesError(null)
+      setDistinctSubjects(null)
+
+      // Fire distinct-subjects query first (single cheap query about the class)
+      try {
+        const n = await fetchDistinctSubjects(endpoint, targetClass)
+        if (!cancelled) setDistinctSubjects(n)
+      } catch { /* non-fatal — leave null */ }
+
+      if (cancelled) return
 
       let list: Predicate[]
       try {
@@ -516,10 +551,11 @@ export default function App() {
           }
         }
 
-        await run('datatypeStatus',  'datatype',  () => fetchDatatype(endpoint, targetClass, p.uri))
-        await run('nodeKindStatus',  'nodeKind',  () => fetchNodeKind(endpoint, targetClass, p.uri))
-        await run('minCountStatus',  'minCount',  () => fetchMinCount(endpoint, targetClass, p.uri))
-        await run('maxCountStatus',  'maxCount',  () => fetchMaxCount(endpoint, targetClass, p.uri))
+        await run('datatypeStatus',         'datatype',         () => fetchDatatype(endpoint, targetClass, p.uri))
+        await run('nodeKindStatus',         'nodeKind',         () => fetchNodeKind(endpoint, targetClass, p.uri))
+        await run('minCountStatus',         'minCount',         () => fetchMinCount(endpoint, targetClass, p.uri))
+        await run('maxCountStatus',         'maxCount',         () => fetchMaxCount(endpoint, targetClass, p.uri))
+        await run('distinctObjectsStatus',  'distinctObjects',  () => fetchDistinctObjects(endpoint, targetClass, p.uri))
       }
     }
 
@@ -674,6 +710,7 @@ export default function App() {
                   <span>sh:minCount</span>
                   <span>sh:maxCount</span>
                   <span>void:triples</span>
+                  <span>void:distinctObjects</span>
                 </div>
                 {predicates.map(p => (
                   <div key={p.uri} className="predicate-row">
@@ -712,6 +749,12 @@ export default function App() {
                     </span>
 
                     <span className="predicate-count">{p.count.toLocaleString()}</span>
+
+                    <span className="predicate-cell predicate-count">
+                      {p.distinctObjectsStatus === 'loading' && <IconSpinner size={11} />}
+                      {p.distinctObjectsStatus === 'done' && <span>{p.distinctObjects?.toLocaleString() ?? '—'}</span>}
+                      {p.distinctObjectsStatus === 'error' && <span className="datatype-badge error">error</span>}
+                    </span>
                   </div>
                 ))}
               </div>

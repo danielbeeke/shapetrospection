@@ -481,7 +481,7 @@ body {
 .predicates-header-row,
 .predicate-row {
   display: grid;
-  grid-template-columns: 1fr 120px 160px 110px 110px 80px;
+  grid-template-columns: 1fr 120px 160px 110px 110px 100px 130px;
   gap: 0;
 }
 
@@ -561,16 +561,18 @@ body {
   align-items: center;
 }
 
-/* right-align the last three numeric columns */
+/* right-align numeric columns */
 .predicates-header-row span:nth-child(4),
 .predicates-header-row span:nth-child(5),
-.predicates-header-row span:nth-child(6) {
+.predicates-header-row span:nth-child(6),
+.predicates-header-row span:nth-child(7) {
   text-align: right;
 }
 
 .predicate-row > :nth-child(4),
 .predicate-row > :nth-child(5),
-.predicate-row > :nth-child(6) {
+.predicate-row > :nth-child(6),
+.predicate-row > :nth-child(7) {
   justify-content: flex-end;
   text-align: right;
 }
