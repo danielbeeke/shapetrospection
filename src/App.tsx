@@ -129,7 +129,8 @@ async function enrichPredicate(
     if (!gone()) setClassData(prev => prev.map(d => d.uri === classUri ? {
       ...d, predicates: d.predicates.map(p => p.uri === predUri ? { ...p, [valueKey]: value, [statusKey]: 'done' } : p),
     } : d))
-  } catch {
+  } catch (err) {
+    console.error(`Failed to fetch ${statusKey} for <${predUri}> on <${classUri}>:`, err)
     if (!gone()) setClassData(prev => prev.map(d => d.uri === classUri ? {
       ...d, predicates: d.predicates.map(p => p.uri === predUri ? { ...p, [statusKey]: 'error' } : p),
     } : d))
@@ -153,7 +154,9 @@ async function enrichClass(
   try {
     const n = await fetchDistinctSubjects(endpoint, classUri)
     updateClass({ distinctSubjects: n })
-  } catch { /* non-fatal */ }
+  } catch (err) {
+    console.error(`Failed to fetch distinct subjects for <${classUri}>:`, err)
+  }
 
   if (gone()) return
 
@@ -162,6 +165,7 @@ async function enrichClass(
   try {
     predicates = await fetchPredicates(endpoint, classUri)
   } catch (err) {
+    console.error(`Failed to fetch predicates for <${classUri}>:`, err)
     updateClass({ predicatesLoading: false, predicatesError: (err as Error).message })
     return
   }
@@ -412,10 +416,10 @@ export default function App() {
     setTotalTriples(null)
     fetchClasses(endpoint)
       .then(list => { if (!cancelled) { setClasses(list); setClassesLoading(false) } })
-      .catch(err => { if (!cancelled) { setClassesError(err.message); setClassesLoading(false) } })
+      .catch(err => { if (!cancelled) { console.error('Failed to fetch classes:', err); setClassesError(err.message); setClassesLoading(false) } })
     fetchTotalTriples(endpoint)
       .then(n => { if (!cancelled) setTotalTriples(n) })
-      .catch(() => { /* non-fatal */ })
+      .catch(err => { console.error('Failed to fetch total triples:', err) })
     return () => { cancelled = true }
   }, [endpoint])
 
@@ -505,6 +509,20 @@ export default function App() {
     } : d))
   }
 
+  function handleStartAgain() {
+    const savedEndpoint = localStorage.getItem('endpoint') ?? ''
+    localStorage.clear()
+    if (savedEndpoint) localStorage.setItem('endpoint', savedEndpoint)
+    shInEnabledRef.current = new Set()
+    setTargetClasses([])
+    setClassData([])
+    setActiveTab('output')
+    setTurtle(null)
+    cancelRef.current.cancelled = true
+    cancelRef.current = { cancelled: false, cancelledClasses: new Set() }
+    prevClassesRef.current = []
+  }
+
   function handleCopy() {
     if (turtle) navigator.clipboard.writeText(turtle)
   }
@@ -570,6 +588,12 @@ export default function App() {
             onAddAll={handleAddAll}
           />
         </div>
+
+        {(targetClasses.length > 0 || classData.length > 0) && (
+          <div className="sidebar-section">
+            <button className="start-again-btn" onClick={handleStartAgain}>Start again</button>
+          </div>
+        )}
 
       </aside>
 

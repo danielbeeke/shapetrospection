@@ -711,6 +711,24 @@ body {
   color: var(--text);
 }
 
+.start-again-btn {
+  width: 100%;
+  padding: 7px 10px;
+  background: none;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  color: var(--text-dim);
+  font-size: 12px;
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.start-again-btn:hover {
+  border-color: #e05c5c;
+  color: #e05c5c;
+}
+
 /* ── Predicates class header row ────────────────────── */
 
 .class-header-row td {
