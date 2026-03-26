@@ -185,7 +185,7 @@ export function generateTurtle(
       emitObservation(
         observations,
         endpoint,
-        `<< <${nodeShapeUri}> sh:property <${uri}> >>`,
+        `<${uri}>`,
         propObsMeasures,
       )
 
