@@ -176,14 +176,18 @@ async function fetchVariants(endpoint: string, classUri: string, predicateUri: s
 WHERE {
   ?s a <${classUri}> ;
      <${predicateUri}> ?o .
-  BIND(IF(isIRI(?o), <urn:shapetrospection:IRI>, DATATYPE(?o)) AS ?datatype)
+  BIND(IF(isIRI(?o), <urn:shapetrospection:IRI>,
+       IF(isBlank(?o), <urn:shapetrospection:BlankNode>,
+       DATATYPE(?o))) AS ?datatype)
   FILTER(BOUND(?datatype))
 }
 GROUP BY ?datatype
 ORDER BY DESC(?triples)`
   const rows = await sparqlQuery(endpoint, query)
   return rows.map(r => ({
-    datatype: r.datatype.value === 'urn:shapetrospection:IRI' ? 'IRI' : r.datatype.value,
+    datatype: r.datatype.value === 'urn:shapetrospection:IRI' ? 'IRI'
+            : r.datatype.value === 'urn:shapetrospection:BlankNode' ? 'BlankNode'
+            : r.datatype.value,
     triples: parseInt(r.triples.value, 10),
     distinctObjects: parseInt(r.distinctObjects.value, 10),
   }))
@@ -444,34 +448,41 @@ function generateTurtle(classUri: string, predicates: Predicate[], distinctSubje
 
     const attrs: string[] = []
 
-    const multipleNodeKinds = p.nodeKindStatus === 'done' && p.nodeKinds && p.nodeKinds.length > 1
+    if (p.variantsStatus === 'done' && p.variants && p.variants.length > 0) {
+      const iri = p.variants.filter(v => v.datatype === 'IRI')
+      const bn  = p.variants.filter(v => v.datatype === 'BlankNode')
+      const lit = p.variants.filter(v => v.datatype !== 'IRI' && v.datatype !== 'BlankNode')
+      const nodeKindCount = [iri.length > 0, bn.length > 0, lit.length > 0].filter(Boolean).length
 
-    if (p.nodeKindStatus === 'done' && p.nodeKinds && p.nodeKinds.length > 0) {
-      if (p.nodeKinds.length === 1) {
-        attrs.push(`    sh:nodeKind ${p.nodeKinds[0].nodeKind}`)
+      if (nodeKindCount > 1) {
+        // Multiple nodeKinds — one unified sh:or across all variants
+        const all: Array<{ triples: number; entry: string }> = [
+          ...iri.map(v => ({ triples: v.triples, entry: `sh:nodeKind sh:IRI ; void:triples ${v.triples} ; void:distinctObjects ${v.distinctObjects}` })),
+          ...bn.map(v =>  ({ triples: v.triples, entry: `sh:nodeKind sh:BlankNode ; void:triples ${v.triples}` })),
+          ...lit.map(v => ({ triples: v.triples, entry: `sh:nodeKind sh:Literal ; sh:datatype ${dtTurtle(v.datatype)} ; void:triples ${v.triples} ; void:distinctObjects ${v.distinctObjects}` })),
+        ].sort((a, b) => b.triples - a.triples)
+        const maxT = all[0].triples
+        const entries = all.map(v => {
+          const deactivated = v.triples < maxT ? ' ; sh:deactivated true' : ''
+          return `        [ ${v.entry}${deactivated} ]`
+        })
+        attrs.push(`    sh:or (\n${entries.join(' ,\n')}\n    )`)
       } else {
-        const maxT = Math.max(...p.nodeKinds.map(v => v.triples))
-        const entries = p.nodeKinds.map(v => {
-          const deactivated = v.triples < maxT ? ' ; sh:deactivated true' : ''
-          return `        [ sh:nodeKind ${v.nodeKind} ; void:triples ${v.triples}${deactivated} ]`
-        })
-        attrs.push(`    sh:or (\n${entries.join(' ,\n')}\n    )`)
-      }
-    }
+        // Single nodeKind — emit sh:nodeKind, then optionally sh:datatype / sh:or for literal variants
+        if (iri.length > 0)      attrs.push(`    sh:nodeKind sh:IRI`)
+        else if (bn.length > 0)  attrs.push(`    sh:nodeKind sh:BlankNode`)
+        else if (lit.length > 0) attrs.push(`    sh:nodeKind sh:Literal`)
 
-    if (!multipleNodeKinds && p.variantsStatus === 'done' && p.variants && p.variants.length > 0) {
-      const lit = p.variants.filter(v => v.datatype !== 'IRI')
-      if (lit.length === 1) {
-        const dt = dtTurtle(lit[0].datatype)
-        attrs.push(`    sh:datatype ${dt}`)
-      } else if (lit.length > 1) {
-        const maxT = Math.max(...lit.map(v => v.triples))
-        const entries = lit.map(v => {
-          const dt = dtTurtle(v.datatype)
-          const deactivated = v.triples < maxT ? ' ; sh:deactivated true' : ''
-          return `        [ sh:datatype ${dt} ; void:triples ${v.triples} ; void:distinctObjects ${v.distinctObjects}${deactivated} ]`
-        })
-        attrs.push(`    sh:or (\n${entries.join(' ,\n')}\n    )`)
+        if (lit.length === 1) {
+          attrs.push(`    sh:datatype ${dtTurtle(lit[0].datatype)}`)
+        } else if (lit.length > 1) {
+          const maxT = Math.max(...lit.map(v => v.triples))
+          const entries = lit.map(v => {
+            const deactivated = v.triples < maxT ? ' ; sh:deactivated true' : ''
+            return `        [ sh:datatype ${dtTurtle(v.datatype)} ; void:triples ${v.triples} ; void:distinctObjects ${v.distinctObjects}${deactivated} ]`
+          })
+          attrs.push(`    sh:or (\n${entries.join(' ,\n')}\n    )`)
+        }
       }
     }
 
@@ -820,9 +831,10 @@ export default function App() {
                         <td className="predicate-datatypes">
                           {p.variantsStatus === 'loading' && <IconSpinner size={11} />}
                           {p.variantsStatus === 'done' && p.variants?.map(v => (
-                            <span key={v.datatype} className={`datatype-badge ${v.datatype === 'IRI' ? 'iri' : 'literal'}`}
+                            <span key={v.datatype}
+                              className={`datatype-badge ${v.datatype === 'IRI' ? 'iri' : v.datatype === 'BlankNode' ? 'unknown' : 'literal'}`}
                               title={`triples: ${v.triples}, distinct: ${v.distinctObjects}`}>
-                              {v.datatype === 'IRI' ? 'IRI' : v.datatype.replace(XSD, 'xsd:').replace(RDF, 'rdf:')}
+                              {v.datatype === 'IRI' ? 'IRI' : v.datatype === 'BlankNode' ? 'BlankNode' : v.datatype.replace(XSD, 'xsd:').replace(RDF, 'rdf:')}
                             </span>
                           ))}
                           {p.variantsStatus === 'error' && <span className="datatype-badge error">error</span>}
