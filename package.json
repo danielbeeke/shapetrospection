@@ -2,7 +2,13 @@
   "name": "shapetrospection",
   "version": "0.1.0",
   "description": "Generate SHACL shapes from a SPARQL endpoint",
-  "keywords": ["shacl", "sparql", "rdf", "shapes", "linked-data"],
+  "keywords": [
+    "shacl",
+    "sparql",
+    "rdf",
+    "shapes",
+    "linked-data"
+  ],
   "license": "MIT",
   "type": "module",
   "bin": {
@@ -14,6 +20,14 @@
   "engines": {
     "node": ">=18"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/danielbeeke/shapetrospection"
+  },
+  "bugs": {
+    "url": "https://github.com/danielbeeke/shapetrospection/issues"
+  },
+  "homepage": "https://github.com/danielbeeke/shapetrospection",
   "scripts": {
     "dev": "vite",
     "build": "npm run build:web && npm run build:cli",
@@ -24,6 +38,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@clack/prompts": "^1.1.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4"
   },

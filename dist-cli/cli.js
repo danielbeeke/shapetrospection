@@ -3,6 +3,7 @@
 // src/cli.ts
 import { mkdirSync, writeFileSync } from "fs";
 import { join } from "path";
+import { progress } from "@clack/prompts";
 
 // src/sparql.ts
 async function sparqlQuery(endpoint, query) {
@@ -338,7 +339,7 @@ function parseArgs(argv) {
     console.error("Usage: shapetrospection <endpoint> [-o output_dir] [-s]");
     console.error("");
     console.error("  endpoint            SPARQL endpoint URL");
-    console.error("  -o, --output <dir>  Write output here (default: stdout)");
+    console.error("  -o, --output <file> Write output here (default: stdout)");
     console.error("  -s, --summary       Print a summary table instead of Turtle");
     process.exit(1);
   }
@@ -400,7 +401,7 @@ async function processClass(endpoint, classUri) {
   };
 }
 async function main() {
-  const { endpoint, outputDir, summary } = parseArgs(process.argv);
+  const { endpoint, outputDir: outputPath, summary } = parseArgs(process.argv);
   console.error(`Connecting to ${endpoint}`);
   const [classes, totalTriples] = await Promise.all([
     fetchClasses(endpoint),
@@ -409,6 +410,14 @@ async function main() {
   const triplesLabel = totalTriples !== null ? `, ${totalTriples.toLocaleString()} total triples` : "";
   console.error(`Found ${classes.length} classes${triplesLabel}`);
   const classDataList = [];
+  const p = progress({ max: Math.max(classes.length, 1) });
+  p.start("Indexing classes");
+  for (let i = 0; i < classes.length; i++) {
+    const classUri = classes[i];
+    p.advance(1, `Processing ${i + 1}/${classes.length}: ${classUri}`);
+    classDataList.push(await processClass(endpoint, classUri));
+  }
+  p.stop("Class indexing complete");
   for (let i = 0; i < classes.length; i++) {
     const classUri = classes[i];
     console.error(`[${i + 1}/${classes.length}] <${classUri}>`);
@@ -417,9 +426,17 @@ async function main() {
   if (summary) {
     console.error("Generating summary\u2026");
     const text = generateSummary(endpoint, classDataList, totalTriples);
-    if (outputDir) {
-      mkdirSync(outputDir, { recursive: true });
-      const outPath = join(outputDir, "summary.txt");
+    process.stdout.write(text + "\n");
+    if (outputPath) {
+      let outPath = outputPath;
+      try {
+        const stat = await import("fs/promises").then((fs) => fs.stat(outputPath));
+        if (stat.isDirectory()) {
+          outPath = join(outputPath, "summary.txt");
+        }
+      } catch {
+        mkdirSync(join(outputPath, ".."), { recursive: true });
+      }
       writeFileSync(outPath, text, "utf-8");
       console.error(`Written to ${outPath}`);
     } else {
@@ -428,9 +445,16 @@ async function main() {
   } else {
     console.error("Generating shapes\u2026");
     const turtle = generateTurtle(endpoint, classDataList, totalTriples);
-    if (outputDir) {
-      mkdirSync(outputDir, { recursive: true });
-      const outPath = join(outputDir, "shapes.ttl");
+    if (outputPath) {
+      let outPath = outputPath;
+      try {
+        const stat = await import("fs/promises").then((fs) => fs.stat(outputPath));
+        if (stat.isDirectory()) {
+          outPath = join(outputPath, "shapes.ttl");
+        }
+      } catch {
+        mkdirSync(join(outputPath, ".."), { recursive: true });
+      }
       writeFileSync(outPath, turtle, "utf-8");
       console.error(`Written to ${outPath}`);
     } else {
