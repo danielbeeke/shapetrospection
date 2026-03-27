@@ -493,9 +493,12 @@ function parseArgs(argv) {
   let summary = false;
   let shex = false;
   let forceRefresh = false;
+  let classFilter = null;
   for (let i = 0; i < args.length; i++) {
     if ((args[i] === "-o" || args[i] === "--output") && args[i + 1]) {
       outputDir = args[++i];
+    } else if ((args[i] === "-c" || args[i] === "--class") && args[i + 1]) {
+      classFilter = args[++i];
     } else if (args[i] === "-s" || args[i] === "--summary") {
       summary = true;
     } else if (args[i] === "-x" || args[i] === "--shex") {
@@ -507,16 +510,17 @@ function parseArgs(argv) {
     }
   }
   if (!endpoint) {
-    console.error("Usage: shapetrospection <endpoint> [-o output] [-s] [-x] [-f]");
+    console.error("Usage: shapetrospection <endpoint> [-o output] [-c class] [-s] [-x] [-f]");
     console.error("");
     console.error("  endpoint            SPARQL endpoint URL");
     console.error("  -o, --output <file> Write output here (default: stdout)");
+    console.error("  -c, --class <name>  Only process classes matching this name");
     console.error("  -s, --summary       Print a summary table instead of Turtle");
     console.error("  -x, --shex          Output ShEx compact syntax instead of Turtle");
     console.error("  -f, --force-refresh Ignore cached data and re-fetch from endpoint");
     process.exit(1);
   }
-  return { endpoint, outputDir, summary, shex, forceRefresh };
+  return { endpoint, outputDir, summary, shex, forceRefresh, classFilter };
 }
 async function enrichPredicate(endpoint, classUri, p) {
   const [variants, nodeKinds, minCount, maxCount, distinctObjects] = await Promise.all([
@@ -585,7 +589,7 @@ function formatAge(cachedAt) {
   return `${days}d ago`;
 }
 async function main() {
-  const { endpoint, outputDir: outputPath, summary, shex, forceRefresh } = parseArgs(process.argv);
+  const { endpoint, outputDir: outputPath, summary, shex, forceRefresh, classFilter } = parseArgs(process.argv);
   let classDataList;
   let totalTriples;
   const cached = !forceRefresh ? readCache(endpoint) : null;
@@ -612,6 +616,23 @@ async function main() {
     }
     p.stop("Class indexing complete");
     writeCache({ endpoint, totalTriples, classDataList, cachedAt: (/* @__PURE__ */ new Date()).toISOString() });
+  }
+  if (classFilter) {
+    const filter = classFilter.toLowerCase();
+    const allClasses = classDataList;
+    classDataList = allClasses.filter((d) => {
+      const localName2 = d.uri.substring(Math.max(d.uri.lastIndexOf("#"), d.uri.lastIndexOf("/")) + 1);
+      return localName2.toLowerCase().includes(filter);
+    });
+    console.error(`Filtered to ${classDataList.length}/${allClasses.length} classes matching "${classFilter}"`);
+    if (classDataList.length === 0) {
+      console.error("No classes matched. Available classes:");
+      for (const d of allClasses) {
+        const ln = d.uri.substring(Math.max(d.uri.lastIndexOf("#"), d.uri.lastIndexOf("/")) + 1);
+        console.error(`  ${ln}`);
+      }
+      process.exit(1);
+    }
   }
   if (summary) {
     console.error("Generating summary\u2026");
