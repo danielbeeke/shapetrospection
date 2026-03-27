@@ -14,6 +14,7 @@ import {
 } from './queries'
 import { generateTurtle } from './turtle'
 import { generateSummary } from './summary'
+import { generateShEx } from './shex'
 import { readCache, writeCache } from './cache'
 import type { ClassData, Predicate } from './types'
 
@@ -21,6 +22,7 @@ interface CliArgs {
   endpoint: string
   outputDir: string | null
   summary: boolean
+  shex: boolean
   forceRefresh: boolean
 }
 
@@ -29,6 +31,7 @@ function parseArgs(argv: string[]): CliArgs {
   let endpoint: string | null = null
   let outputDir: string | null = null
   let summary = false
+  let shex = false
   let forceRefresh = false
 
   for (let i = 0; i < args.length; i++) {
@@ -36,6 +39,8 @@ function parseArgs(argv: string[]): CliArgs {
       outputDir = args[++i]
     } else if (args[i] === '-s' || args[i] === '--summary') {
       summary = true
+    } else if (args[i] === '-x' || args[i] === '--shex') {
+      shex = true
     } else if (args[i] === '-f' || args[i] === '--force-refresh') {
       forceRefresh = true
     } else if (!args[i].startsWith('-')) {
@@ -44,16 +49,17 @@ function parseArgs(argv: string[]): CliArgs {
   }
 
   if (!endpoint) {
-    console.error('Usage: shapetrospection <endpoint> [-o output_dir] [-s] [-f]')
+    console.error('Usage: shapetrospection <endpoint> [-o output] [-s] [-x] [-f]')
     console.error('')
     console.error('  endpoint            SPARQL endpoint URL')
     console.error('  -o, --output <file> Write output here (default: stdout)')
     console.error('  -s, --summary       Print a summary table instead of Turtle')
+    console.error('  -x, --shex          Output ShEx compact syntax instead of Turtle')
     console.error('  -f, --force-refresh Ignore cached data and re-fetch from endpoint')
     process.exit(1)
   }
 
-  return { endpoint, outputDir, summary, forceRefresh }
+  return { endpoint, outputDir, summary, shex, forceRefresh }
 }
 
 async function enrichPredicate(endpoint: string, classUri: string, p: Predicate): Promise<Predicate> {
@@ -128,7 +134,7 @@ function formatAge(cachedAt: string): string {
 }
 
 async function main() {
-  const { endpoint, outputDir: outputPath, summary, forceRefresh } = parseArgs(process.argv)
+  const { endpoint, outputDir: outputPath, summary, shex, forceRefresh } = parseArgs(process.argv)
 
   let classDataList: ClassData[]
   let totalTriples: number | null
@@ -182,6 +188,24 @@ async function main() {
       console.error(`Written to ${outPath}`)
     } else {
       process.stdout.write(text + '\n')
+    }
+  } else if (shex) {
+    console.error('Generating ShEx shapes…')
+    const shexOutput = generateShEx(endpoint, classDataList, totalTriples)
+    if (outputPath) {
+      let outPath = outputPath
+      try {
+        const stat = await import('node:fs/promises').then(fs => fs.stat(outputPath))
+        if (stat.isDirectory()) {
+          outPath = join(outputPath, 'shapes.shex')
+        }
+      } catch {
+        mkdirSync(join(outputPath, '..'), { recursive: true })
+      }
+      writeFileSync(outPath, shexOutput, 'utf-8')
+      console.error(`Written to ${outPath}`)
+    } else {
+      process.stdout.write(shexOutput + '\n')
     }
   } else {
     console.error('Generating shapes…')
