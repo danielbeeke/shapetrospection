@@ -1,0 +1,3055 @@
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix void: <http://rdfs.org/ns/void#> .
+@prefix qb:   <http://purl.org/linked-data/cube#> .
+@prefix shapetrospection: <urn:shapetrospection:> .
+
+<https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql>
+    a void:Dataset ;
+    void:triples 3535 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:observed <http://www.w3.org/2000/01/rdf-schema#ClassShape> ;
+    void:distinctSubjects 35 ;
+    void:properties 5 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <http://www.w3.org/2000/01/rdf-schema#ClassShape> ;
+    shapetrospection:observed <http://www.w3.org/2000/01/rdf-schema#ClassShape-comment> ;
+    void:triples 35 ;
+    void:distinctObjects 35 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <http://www.w3.org/2000/01/rdf-schema#ClassShape> ;
+    shapetrospection:observed <http://www.w3.org/2000/01/rdf-schema#ClassShape-label> ;
+    void:triples 35 ;
+    void:distinctObjects 35 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <http://www.w3.org/2000/01/rdf-schema#ClassShape> ;
+    shapetrospection:observed <http://www.w3.org/2000/01/rdf-schema#ClassShape-name> ;
+    void:triples 35 ;
+    void:distinctObjects 35 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <http://www.w3.org/2000/01/rdf-schema#ClassShape> ;
+    shapetrospection:observed <http://www.w3.org/2000/01/rdf-schema#ClassShape-subClassOf> ;
+    void:triples 34 ;
+    void:distinctObjects 11 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <http://www.w3.org/2000/01/rdf-schema#ClassShape> ;
+    shapetrospection:observed <http://www.w3.org/2000/01/rdf-schema#ClassShape-abstract> ;
+    void:triples 3 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:observed <http://www.w3.org/2000/01/rdf-schema#DatatypeShape> ;
+    void:distinctSubjects 5 ;
+    void:properties 2 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <http://www.w3.org/2000/01/rdf-schema#DatatypeShape> ;
+    shapetrospection:observed <http://www.w3.org/2000/01/rdf-schema#DatatypeShape-label> ;
+    void:triples 5 ;
+    void:distinctObjects 5 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <http://www.w3.org/2000/01/rdf-schema#DatatypeShape> ;
+    shapetrospection:observed <http://www.w3.org/2000/01/rdf-schema#DatatypeShape-name> ;
+    void:triples 5 ;
+    void:distinctObjects 5 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:observed <http://www.w3.org/2002/07/owl#ClassShape> ;
+    void:distinctSubjects 35 ;
+    void:properties 5 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <http://www.w3.org/2002/07/owl#ClassShape> ;
+    shapetrospection:observed <http://www.w3.org/2002/07/owl#ClassShape-comment> ;
+    void:triples 35 ;
+    void:distinctObjects 35 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <http://www.w3.org/2002/07/owl#ClassShape> ;
+    shapetrospection:observed <http://www.w3.org/2002/07/owl#ClassShape-label> ;
+    void:triples 35 ;
+    void:distinctObjects 35 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <http://www.w3.org/2002/07/owl#ClassShape> ;
+    shapetrospection:observed <http://www.w3.org/2002/07/owl#ClassShape-name> ;
+    void:triples 35 ;
+    void:distinctObjects 35 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <http://www.w3.org/2002/07/owl#ClassShape> ;
+    shapetrospection:observed <http://www.w3.org/2002/07/owl#ClassShape-subClassOf> ;
+    void:triples 34 ;
+    void:distinctObjects 11 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <http://www.w3.org/2002/07/owl#ClassShape> ;
+    shapetrospection:observed <http://www.w3.org/2002/07/owl#ClassShape-abstract> ;
+    void:triples 3 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:observed <http://www.w3.org/2002/07/owl#DatatypePropertyShape> ;
+    void:distinctSubjects 23 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:observed <http://www.w3.org/2002/07/owl#ObjectPropertyShape> ;
+    void:distinctSubjects 3 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:observed <http://www.w3.org/ns/shacl#NodeShapeShape> ;
+    void:distinctSubjects 57 ;
+    void:properties 5 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <http://www.w3.org/ns/shacl#NodeShapeShape> ;
+    shapetrospection:observed <http://www.w3.org/ns/shacl#NodeShapeShape-targetClass> ;
+    void:triples 36 ;
+    void:distinctObjects 35 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <http://www.w3.org/ns/shacl#NodeShapeShape> ;
+    shapetrospection:observed <http://www.w3.org/ns/shacl#NodeShapeShape-property> ;
+    void:triples 11 ;
+    void:distinctObjects 11 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <http://www.w3.org/ns/shacl#NodeShapeShape> ;
+    shapetrospection:observed <http://www.w3.org/ns/shacl#NodeShapeShape-order> ;
+    void:triples 3 ;
+    void:distinctObjects 3 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <http://www.w3.org/ns/shacl#NodeShapeShape> ;
+    shapetrospection:observed <http://www.w3.org/ns/shacl#NodeShapeShape-readOnly> ;
+    void:triples 2 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <http://www.w3.org/ns/shacl#NodeShapeShape> ;
+    shapetrospection:observed <http://www.w3.org/ns/shacl#NodeShapeShape-stem> ;
+    void:triples 1 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:observed <http://www.w3.org/ns/shacl#PropertyGroupShape> ;
+    void:distinctSubjects 11 ;
+    void:properties 3 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <http://www.w3.org/ns/shacl#PropertyGroupShape> ;
+    shapetrospection:observed <http://www.w3.org/ns/shacl#PropertyGroupShape-label> ;
+    void:triples 11 ;
+    void:distinctObjects 11 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <http://www.w3.org/ns/shacl#PropertyGroupShape> ;
+    shapetrospection:observed <http://www.w3.org/ns/shacl#PropertyGroupShape-name> ;
+    void:triples 11 ;
+    void:distinctObjects 11 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <http://www.w3.org/ns/shacl#PropertyGroupShape> ;
+    shapetrospection:observed <http://www.w3.org/ns/shacl#PropertyGroupShape-order> ;
+    void:triples 7 ;
+    void:distinctObjects 7 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <http://www.w3.org/ns/shacl#PropertyGroupShape> ;
+    shapetrospection:observed <http://www.w3.org/ns/shacl#PropertyGroupShape-order-decimal> ;
+    void:triples 4 ;
+    void:distinctObjects 4 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <http://www.w3.org/ns/shacl#PropertyGroupShape> ;
+    shapetrospection:observed <http://www.w3.org/ns/shacl#PropertyGroupShape-order-integer> ;
+    void:triples 3 ;
+    void:distinctObjects 3 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:observed <http://www.w3.org/ns/shacl#PropertyShapeShape> ;
+    void:distinctSubjects 1 ;
+    void:properties 5 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <http://www.w3.org/ns/shacl#PropertyShapeShape> ;
+    shapetrospection:observed <http://www.w3.org/ns/shacl#PropertyShapeShape-class> ;
+    void:triples 1 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <http://www.w3.org/ns/shacl#PropertyShapeShape> ;
+    shapetrospection:observed <http://www.w3.org/ns/shacl#PropertyShapeShape-description> ;
+    void:triples 1 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <http://www.w3.org/ns/shacl#PropertyShapeShape> ;
+    shapetrospection:observed <http://www.w3.org/ns/shacl#PropertyShapeShape-minLength> ;
+    void:triples 1 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <http://www.w3.org/ns/shacl#PropertyShapeShape> ;
+    shapetrospection:observed <http://www.w3.org/ns/shacl#PropertyShapeShape-name> ;
+    void:triples 1 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <http://www.w3.org/ns/shacl#PropertyShapeShape> ;
+    shapetrospection:observed <http://www.w3.org/ns/shacl#PropertyShapeShape-path> ;
+    void:triples 1 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:observed <http://www.w3.org/ns/shacl#ProperyShapeShape> ;
+    void:distinctSubjects 10 ;
+    void:properties 14 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <http://www.w3.org/ns/shacl#ProperyShapeShape> ;
+    shapetrospection:observed <http://www.w3.org/ns/shacl#ProperyShapeShape-minLength> ;
+    void:triples 10 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <http://www.w3.org/ns/shacl#ProperyShapeShape> ;
+    shapetrospection:observed <http://www.w3.org/ns/shacl#ProperyShapeShape-name> ;
+    void:triples 10 ;
+    void:distinctObjects 10 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <http://www.w3.org/ns/shacl#ProperyShapeShape> ;
+    shapetrospection:observed <http://www.w3.org/ns/shacl#ProperyShapeShape-path> ;
+    void:triples 10 ;
+    void:distinctObjects 10 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <http://www.w3.org/ns/shacl#ProperyShapeShape> ;
+    shapetrospection:observed <http://www.w3.org/ns/shacl#ProperyShapeShape-description> ;
+    void:triples 9 ;
+    void:distinctObjects 9 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <http://www.w3.org/ns/shacl#ProperyShapeShape> ;
+    shapetrospection:observed <http://www.w3.org/ns/shacl#ProperyShapeShape-group> ;
+    void:triples 9 ;
+    void:distinctObjects 5 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <http://www.w3.org/ns/shacl#ProperyShapeShape> ;
+    shapetrospection:observed <http://www.w3.org/ns/shacl#ProperyShapeShape-order> ;
+    void:triples 8 ;
+    void:distinctObjects 6 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <http://www.w3.org/ns/shacl#ProperyShapeShape> ;
+    shapetrospection:observed <http://www.w3.org/ns/shacl#ProperyShapeShape-datatype> ;
+    void:triples 8 ;
+    void:distinctObjects 5 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <http://www.w3.org/ns/shacl#ProperyShapeShape> ;
+    shapetrospection:observed <http://www.w3.org/ns/shacl#ProperyShapeShape-class> ;
+    void:triples 2 ;
+    void:distinctObjects 2 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <http://www.w3.org/ns/shacl#ProperyShapeShape> ;
+    shapetrospection:observed <http://www.w3.org/ns/shacl#ProperyShapeShape-maxCount> ;
+    void:triples 2 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <http://www.w3.org/ns/shacl#ProperyShapeShape> ;
+    shapetrospection:observed <http://www.w3.org/ns/shacl#ProperyShapeShape-minCount> ;
+    void:triples 2 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <http://www.w3.org/ns/shacl#ProperyShapeShape> ;
+    shapetrospection:observed <http://www.w3.org/ns/shacl#ProperyShapeShape-useInSearch> ;
+    void:triples 2 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <http://www.w3.org/ns/shacl#ProperyShapeShape> ;
+    shapetrospection:observed <http://www.w3.org/ns/shacl#ProperyShapeShape-readOnly> ;
+    void:triples 1 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <http://www.w3.org/ns/shacl#ProperyShapeShape> ;
+    shapetrospection:observed <http://www.w3.org/ns/shacl#ProperyShapeShape-languageIn> ;
+    void:triples 1 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <http://www.w3.org/ns/shacl#ProperyShapeShape> ;
+    shapetrospection:observed <http://www.w3.org/ns/shacl#ProperyShapeShape-uniqueLang> ;
+    void:triples 1 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:observed <https://schema.org/AnimalShelterShape> ;
+    void:distinctSubjects 1 ;
+    void:properties 2 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/AnimalShelterShape> ;
+    shapetrospection:observed <https://schema.org/AnimalShelterShape-description> ;
+    void:triples 1 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/AnimalShelterShape> ;
+    shapetrospection:observed <https://schema.org/AnimalShelterShape-name> ;
+    void:triples 1 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:observed <https://schema.org/AudienceShape> ;
+    void:distinctSubjects 3 ;
+    void:properties 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/AudienceShape> ;
+    shapetrospection:observed <https://schema.org/AudienceShape-name> ;
+    void:triples 3 ;
+    void:distinctObjects 3 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:observed <https://schema.org/AudioObjectShape> ;
+    void:distinctSubjects 5 ;
+    void:properties 2 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/AudioObjectShape> ;
+    shapetrospection:observed <https://schema.org/AudioObjectShape-contentUrl> ;
+    void:triples 5 ;
+    void:distinctObjects 5 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/AudioObjectShape> ;
+    shapetrospection:observed <https://schema.org/AudioObjectShape-encoding> ;
+    void:triples 5 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:observed <https://schema.org/BusStopShape> ;
+    void:distinctSubjects 1 ;
+    void:properties 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/BusStopShape> ;
+    shapetrospection:observed <https://schema.org/BusStopShape-name> ;
+    void:triples 1 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:observed <https://schema.org/EntryPointShape> ;
+    void:distinctSubjects 3 ;
+    void:properties 2 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/EntryPointShape> ;
+    shapetrospection:observed <https://schema.org/EntryPointShape-name> ;
+    void:triples 3 ;
+    void:distinctObjects 2 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/EntryPointShape> ;
+    shapetrospection:observed <https://schema.org/EntryPointShape-image> ;
+    void:triples 2 ;
+    void:distinctObjects 2 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:observed <https://schema.org/GolfCourseShape> ;
+    void:distinctSubjects 1 ;
+    void:properties 2 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/GolfCourseShape> ;
+    shapetrospection:observed <https://schema.org/GolfCourseShape-image> ;
+    void:triples 1 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/GolfCourseShape> ;
+    shapetrospection:observed <https://schema.org/GolfCourseShape-name> ;
+    void:triples 1 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:observed <https://schema.org/HouseShape> ;
+    void:distinctSubjects 1 ;
+    void:properties 2 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/HouseShape> ;
+    shapetrospection:observed <https://schema.org/HouseShape-image> ;
+    void:triples 1 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/HouseShape> ;
+    shapetrospection:observed <https://schema.org/HouseShape-name> ;
+    void:triples 1 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:observed <https://schema.org/ImageObjectShape> ;
+    void:distinctSubjects 7 ;
+    void:properties 2 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/ImageObjectShape> ;
+    shapetrospection:observed <https://schema.org/ImageObjectShape-contentUrl> ;
+    void:triples 7 ;
+    void:distinctObjects 7 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/ImageObjectShape> ;
+    shapetrospection:observed <https://schema.org/ImageObjectShape-name> ;
+    void:triples 1 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:observed <https://schema.org/LodgingBusinessShape> ;
+    void:distinctSubjects 3 ;
+    void:properties 7 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/LodgingBusinessShape> ;
+    shapetrospection:observed <https://schema.org/LodgingBusinessShape-asWKT> ;
+    void:triples 3 ;
+    void:distinctObjects 3 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/LodgingBusinessShape> ;
+    shapetrospection:observed <https://schema.org/LodgingBusinessShape-description> ;
+    void:triples 3 ;
+    void:distinctObjects 3 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/LodgingBusinessShape> ;
+    shapetrospection:observed <https://schema.org/LodgingBusinessShape-image> ;
+    void:triples 3 ;
+    void:distinctObjects 3 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/LodgingBusinessShape> ;
+    shapetrospection:observed <https://schema.org/LodgingBusinessShape-latitude> ;
+    void:triples 3 ;
+    void:distinctObjects 3 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/LodgingBusinessShape> ;
+    shapetrospection:observed <https://schema.org/LodgingBusinessShape-longitude> ;
+    void:triples 3 ;
+    void:distinctObjects 3 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/LodgingBusinessShape> ;
+    shapetrospection:observed <https://schema.org/LodgingBusinessShape-name> ;
+    void:triples 3 ;
+    void:distinctObjects 3 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/LodgingBusinessShape> ;
+    shapetrospection:observed <https://schema.org/LodgingBusinessShape-url> ;
+    void:triples 3 ;
+    void:distinctObjects 3 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:observed <https://schema.org/MedicalBusinessShape> ;
+    void:distinctSubjects 1 ;
+    void:properties 6 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/MedicalBusinessShape> ;
+    shapetrospection:observed <https://schema.org/MedicalBusinessShape-description> ;
+    void:triples 2 ;
+    void:distinctObjects 2 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/MedicalBusinessShape> ;
+    shapetrospection:observed <https://schema.org/MedicalBusinessShape-description-HTML> ;
+    void:triples 1 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/MedicalBusinessShape> ;
+    shapetrospection:observed <https://schema.org/MedicalBusinessShape-description-langString> ;
+    void:triples 1 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/MedicalBusinessShape> ;
+    shapetrospection:observed <https://schema.org/MedicalBusinessShape-asWKT> ;
+    void:triples 1 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/MedicalBusinessShape> ;
+    shapetrospection:observed <https://schema.org/MedicalBusinessShape-image> ;
+    void:triples 1 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/MedicalBusinessShape> ;
+    shapetrospection:observed <https://schema.org/MedicalBusinessShape-latitude> ;
+    void:triples 1 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/MedicalBusinessShape> ;
+    shapetrospection:observed <https://schema.org/MedicalBusinessShape-longitude> ;
+    void:triples 1 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/MedicalBusinessShape> ;
+    shapetrospection:observed <https://schema.org/MedicalBusinessShape-name> ;
+    void:triples 1 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:observed <https://schema.org/ParkShape> ;
+    void:distinctSubjects 4 ;
+    void:properties 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/ParkShape> ;
+    shapetrospection:observed <https://schema.org/ParkShape-name> ;
+    void:triples 4 ;
+    void:distinctObjects 3 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:observed <https://schema.org/ParkingFacilityShape> ;
+    void:distinctSubjects 2 ;
+    void:properties 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/ParkingFacilityShape> ;
+    shapetrospection:observed <https://schema.org/ParkingFacilityShape-name> ;
+    void:triples 2 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:observed <https://schema.org/PerformingArtsTheaterShape> ;
+    void:distinctSubjects 1 ;
+    void:properties 7 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/PerformingArtsTheaterShape> ;
+    shapetrospection:observed <https://schema.org/PerformingArtsTheaterShape-asWKT> ;
+    void:triples 1 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/PerformingArtsTheaterShape> ;
+    shapetrospection:observed <https://schema.org/PerformingArtsTheaterShape-description> ;
+    void:triples 1 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/PerformingArtsTheaterShape> ;
+    shapetrospection:observed <https://schema.org/PerformingArtsTheaterShape-image> ;
+    void:triples 1 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/PerformingArtsTheaterShape> ;
+    shapetrospection:observed <https://schema.org/PerformingArtsTheaterShape-latitude> ;
+    void:triples 1 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/PerformingArtsTheaterShape> ;
+    shapetrospection:observed <https://schema.org/PerformingArtsTheaterShape-longitude> ;
+    void:triples 1 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/PerformingArtsTheaterShape> ;
+    shapetrospection:observed <https://schema.org/PerformingArtsTheaterShape-name> ;
+    void:triples 1 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/PerformingArtsTheaterShape> ;
+    shapetrospection:observed <https://schema.org/PerformingArtsTheaterShape-url> ;
+    void:triples 1 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:observed <https://schema.org/PlaceShape> ;
+    void:distinctSubjects 22 ;
+    void:properties 6 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/PlaceShape> ;
+    shapetrospection:observed <https://schema.org/PlaceShape-description> ;
+    void:triples 38 ;
+    void:distinctObjects 35 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/PlaceShape> ;
+    shapetrospection:observed <https://schema.org/PlaceShape-description-langString> ;
+    void:triples 20 ;
+    void:distinctObjects 17 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/PlaceShape> ;
+    shapetrospection:observed <https://schema.org/PlaceShape-description-HTML> ;
+    void:triples 18 ;
+    void:distinctObjects 18 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/PlaceShape> ;
+    shapetrospection:observed <https://schema.org/PlaceShape-name> ;
+    void:triples 24 ;
+    void:distinctObjects 21 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/PlaceShape> ;
+    shapetrospection:observed <https://schema.org/PlaceShape-image> ;
+    void:triples 21 ;
+    void:distinctObjects 19 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/PlaceShape> ;
+    shapetrospection:observed <https://schema.org/PlaceShape-image-anyURI> ;
+    void:triples 20 ;
+    void:distinctObjects 18 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/PlaceShape> ;
+    shapetrospection:observed <https://schema.org/PlaceShape-image-IRI> ;
+    void:triples 1 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/PlaceShape> ;
+    shapetrospection:observed <https://schema.org/PlaceShape-asWKT> ;
+    void:triples 20 ;
+    void:distinctObjects 18 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/PlaceShape> ;
+    shapetrospection:observed <https://schema.org/PlaceShape-latitude> ;
+    void:triples 20 ;
+    void:distinctObjects 18 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/PlaceShape> ;
+    shapetrospection:observed <https://schema.org/PlaceShape-latitude-string> ;
+    void:triples 16 ;
+    void:distinctObjects 16 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/PlaceShape> ;
+    shapetrospection:observed <https://schema.org/PlaceShape-latitude-float> ;
+    void:triples 4 ;
+    void:distinctObjects 2 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/PlaceShape> ;
+    shapetrospection:observed <https://schema.org/PlaceShape-longitude> ;
+    void:triples 20 ;
+    void:distinctObjects 18 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/PlaceShape> ;
+    shapetrospection:observed <https://schema.org/PlaceShape-longitude-string> ;
+    void:triples 16 ;
+    void:distinctObjects 16 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/PlaceShape> ;
+    shapetrospection:observed <https://schema.org/PlaceShape-longitude-float> ;
+    void:triples 4 ;
+    void:distinctObjects 2 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:observed <https://schema.org/PlayShape> ;
+    void:distinctSubjects 8 ;
+    void:properties 8 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/PlayShape> ;
+    shapetrospection:observed <https://schema.org/PlayShape-accessibilityFeature> ;
+    void:triples 27 ;
+    void:distinctObjects 7 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/PlayShape> ;
+    shapetrospection:observed <https://schema.org/PlayShape-description> ;
+    void:triples 16 ;
+    void:distinctObjects 13 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/PlayShape> ;
+    shapetrospection:observed <https://schema.org/PlayShape-description-HTML> ;
+    void:triples 8 ;
+    void:distinctObjects 8 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/PlayShape> ;
+    shapetrospection:observed <https://schema.org/PlayShape-description-langString> ;
+    void:triples 8 ;
+    void:distinctObjects 5 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/PlayShape> ;
+    shapetrospection:observed <https://schema.org/PlayShape-asWKT> ;
+    void:triples 8 ;
+    void:distinctObjects 8 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/PlayShape> ;
+    shapetrospection:observed <https://schema.org/PlayShape-image> ;
+    void:triples 8 ;
+    void:distinctObjects 8 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/PlayShape> ;
+    shapetrospection:observed <https://schema.org/PlayShape-latitude> ;
+    void:triples 8 ;
+    void:distinctObjects 8 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/PlayShape> ;
+    shapetrospection:observed <https://schema.org/PlayShape-longitude> ;
+    void:triples 8 ;
+    void:distinctObjects 8 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/PlayShape> ;
+    shapetrospection:observed <https://schema.org/PlayShape-name> ;
+    void:triples 8 ;
+    void:distinctObjects 8 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/PlayShape> ;
+    shapetrospection:observed <https://schema.org/PlayShape-url> ;
+    void:triples 8 ;
+    void:distinctObjects 8 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:observed <https://schema.org/PlaygroundShape> ;
+    void:distinctSubjects 7 ;
+    void:properties 2 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/PlaygroundShape> ;
+    shapetrospection:observed <https://schema.org/PlaygroundShape-name> ;
+    void:triples 10 ;
+    void:distinctObjects 3 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/PlaygroundShape> ;
+    shapetrospection:observed <https://schema.org/PlaygroundShape-image> ;
+    void:triples 6 ;
+    void:distinctObjects 2 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:observed <https://schema.org/PublicSwimmingPoolShape> ;
+    void:distinctSubjects 1 ;
+    void:properties 6 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/PublicSwimmingPoolShape> ;
+    shapetrospection:observed <https://schema.org/PublicSwimmingPoolShape-description> ;
+    void:triples 2 ;
+    void:distinctObjects 2 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/PublicSwimmingPoolShape> ;
+    shapetrospection:observed <https://schema.org/PublicSwimmingPoolShape-description-HTML> ;
+    void:triples 1 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/PublicSwimmingPoolShape> ;
+    shapetrospection:observed <https://schema.org/PublicSwimmingPoolShape-description-langString> ;
+    void:triples 1 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/PublicSwimmingPoolShape> ;
+    shapetrospection:observed <https://schema.org/PublicSwimmingPoolShape-asWKT> ;
+    void:triples 1 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/PublicSwimmingPoolShape> ;
+    shapetrospection:observed <https://schema.org/PublicSwimmingPoolShape-image> ;
+    void:triples 1 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/PublicSwimmingPoolShape> ;
+    shapetrospection:observed <https://schema.org/PublicSwimmingPoolShape-latitude> ;
+    void:triples 1 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/PublicSwimmingPoolShape> ;
+    shapetrospection:observed <https://schema.org/PublicSwimmingPoolShape-longitude> ;
+    void:triples 1 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/PublicSwimmingPoolShape> ;
+    shapetrospection:observed <https://schema.org/PublicSwimmingPoolShape-name> ;
+    void:triples 1 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:observed <https://schema.org/RecyclingCenterShape> ;
+    void:distinctSubjects 1 ;
+    void:properties 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/RecyclingCenterShape> ;
+    shapetrospection:observed <https://schema.org/RecyclingCenterShape-name> ;
+    void:triples 1 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:observed <https://schema.org/RestaurantShape> ;
+    void:distinctSubjects 52 ;
+    void:properties 8 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/RestaurantShape> ;
+    shapetrospection:observed <https://schema.org/RestaurantShape-description> ;
+    void:triples 101 ;
+    void:distinctObjects 87 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/RestaurantShape> ;
+    shapetrospection:observed <https://schema.org/RestaurantShape-description-HTML> ;
+    void:triples 50 ;
+    void:distinctObjects 44 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/RestaurantShape> ;
+    shapetrospection:observed <https://schema.org/RestaurantShape-description-langString> ;
+    void:triples 49 ;
+    void:distinctObjects 41 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/RestaurantShape> ;
+    shapetrospection:observed <https://schema.org/RestaurantShape-description-IRI> ;
+    void:triples 1 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/RestaurantShape> ;
+    shapetrospection:observed <https://schema.org/RestaurantShape-description-bla> ;
+    void:triples 1 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/RestaurantShape> ;
+    shapetrospection:observed <https://schema.org/RestaurantShape-accessibilityFeature> ;
+    void:triples 87 ;
+    void:distinctObjects 15 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/RestaurantShape> ;
+    shapetrospection:observed <https://schema.org/RestaurantShape-name> ;
+    void:triples 52 ;
+    void:distinctObjects 52 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/RestaurantShape> ;
+    shapetrospection:observed <https://schema.org/RestaurantShape-image> ;
+    void:triples 51 ;
+    void:distinctObjects 46 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/RestaurantShape> ;
+    shapetrospection:observed <https://schema.org/RestaurantShape-asWKT> ;
+    void:triples 50 ;
+    void:distinctObjects 50 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/RestaurantShape> ;
+    shapetrospection:observed <https://schema.org/RestaurantShape-latitude> ;
+    void:triples 50 ;
+    void:distinctObjects 50 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/RestaurantShape> ;
+    shapetrospection:observed <https://schema.org/RestaurantShape-longitude> ;
+    void:triples 50 ;
+    void:distinctObjects 50 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/RestaurantShape> ;
+    shapetrospection:observed <https://schema.org/RestaurantShape-url> ;
+    void:triples 16 ;
+    void:distinctObjects 16 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:observed <https://schema.org/ShortStoryShape> ;
+    void:distinctSubjects 30 ;
+    void:properties 9 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/ShortStoryShape> ;
+    shapetrospection:observed <https://schema.org/ShortStoryShape-description> ;
+    void:triples 60 ;
+    void:distinctObjects 37 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/ShortStoryShape> ;
+    shapetrospection:observed <https://schema.org/ShortStoryShape-description-HTML> ;
+    void:triples 30 ;
+    void:distinctObjects 30 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/ShortStoryShape> ;
+    shapetrospection:observed <https://schema.org/ShortStoryShape-description-langString> ;
+    void:triples 30 ;
+    void:distinctObjects 7 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/ShortStoryShape> ;
+    shapetrospection:observed <https://schema.org/ShortStoryShape-asWKT> ;
+    void:triples 30 ;
+    void:distinctObjects 30 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/ShortStoryShape> ;
+    shapetrospection:observed <https://schema.org/ShortStoryShape-image> ;
+    void:triples 30 ;
+    void:distinctObjects 30 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/ShortStoryShape> ;
+    shapetrospection:observed <https://schema.org/ShortStoryShape-latitude> ;
+    void:triples 30 ;
+    void:distinctObjects 30 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/ShortStoryShape> ;
+    shapetrospection:observed <https://schema.org/ShortStoryShape-longitude> ;
+    void:triples 30 ;
+    void:distinctObjects 29 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/ShortStoryShape> ;
+    shapetrospection:observed <https://schema.org/ShortStoryShape-name> ;
+    void:triples 30 ;
+    void:distinctObjects 30 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/ShortStoryShape> ;
+    shapetrospection:observed <https://schema.org/ShortStoryShape-url> ;
+    void:triples 30 ;
+    void:distinctObjects 30 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/ShortStoryShape> ;
+    shapetrospection:observed <https://schema.org/ShortStoryShape-audience> ;
+    void:triples 4 ;
+    void:distinctObjects 2 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/ShortStoryShape> ;
+    shapetrospection:observed <https://schema.org/ShortStoryShape-accessibilityFeature> ;
+    void:triples 4 ;
+    void:distinctObjects 4 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:observed <https://schema.org/TouristAttractionShape> ;
+    void:distinctSubjects 41 ;
+    void:properties 14 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/TouristAttractionShape> ;
+    shapetrospection:observed <https://schema.org/TouristAttractionShape-accessibilityFeature> ;
+    void:triples 174 ;
+    void:distinctObjects 28 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/TouristAttractionShape> ;
+    shapetrospection:observed <https://schema.org/TouristAttractionShape-description> ;
+    void:triples 78 ;
+    void:distinctObjects 75 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/TouristAttractionShape> ;
+    shapetrospection:observed <https://schema.org/TouristAttractionShape-description-langString> ;
+    void:triples 46 ;
+    void:distinctObjects 43 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/TouristAttractionShape> ;
+    shapetrospection:observed <https://schema.org/TouristAttractionShape-description-HTML> ;
+    void:triples 32 ;
+    void:distinctObjects 32 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/TouristAttractionShape> ;
+    shapetrospection:observed <https://schema.org/TouristAttractionShape-name> ;
+    void:triples 46 ;
+    void:distinctObjects 41 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/TouristAttractionShape> ;
+    shapetrospection:observed <https://schema.org/TouristAttractionShape-name-langString> ;
+    void:triples 44 ;
+    void:distinctObjects 39 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/TouristAttractionShape> ;
+    shapetrospection:observed <https://schema.org/TouristAttractionShape-name-string> ;
+    void:triples 2 ;
+    void:distinctObjects 2 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/TouristAttractionShape> ;
+    shapetrospection:observed <https://schema.org/TouristAttractionShape-audience> ;
+    void:triples 38 ;
+    void:distinctObjects 3 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/TouristAttractionShape> ;
+    shapetrospection:observed <https://schema.org/TouristAttractionShape-asWKT> ;
+    void:triples 34 ;
+    void:distinctObjects 34 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/TouristAttractionShape> ;
+    shapetrospection:observed <https://schema.org/TouristAttractionShape-image> ;
+    void:triples 34 ;
+    void:distinctObjects 33 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/TouristAttractionShape> ;
+    shapetrospection:observed <https://schema.org/TouristAttractionShape-image-anyURI> ;
+    void:triples 33 ;
+    void:distinctObjects 32 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/TouristAttractionShape> ;
+    shapetrospection:observed <https://schema.org/TouristAttractionShape-image-string> ;
+    void:triples 1 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/TouristAttractionShape> ;
+    shapetrospection:observed <https://schema.org/TouristAttractionShape-latitude> ;
+    void:triples 34 ;
+    void:distinctObjects 34 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/TouristAttractionShape> ;
+    shapetrospection:observed <https://schema.org/TouristAttractionShape-latitude-string> ;
+    void:triples 29 ;
+    void:distinctObjects 29 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/TouristAttractionShape> ;
+    shapetrospection:observed <https://schema.org/TouristAttractionShape-latitude-float> ;
+    void:triples 5 ;
+    void:distinctObjects 5 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/TouristAttractionShape> ;
+    shapetrospection:observed <https://schema.org/TouristAttractionShape-longitude> ;
+    void:triples 34 ;
+    void:distinctObjects 33 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/TouristAttractionShape> ;
+    shapetrospection:observed <https://schema.org/TouristAttractionShape-longitude-string> ;
+    void:triples 30 ;
+    void:distinctObjects 29 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/TouristAttractionShape> ;
+    shapetrospection:observed <https://schema.org/TouristAttractionShape-longitude-float> ;
+    void:triples 4 ;
+    void:distinctObjects 4 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/TouristAttractionShape> ;
+    shapetrospection:observed <https://schema.org/TouristAttractionShape-url> ;
+    void:triples 34 ;
+    void:distinctObjects 33 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/TouristAttractionShape> ;
+    shapetrospection:observed <https://schema.org/TouristAttractionShape-includesAttraction> ;
+    void:triples 15 ;
+    void:distinctObjects 15 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/TouristAttractionShape> ;
+    shapetrospection:observed <https://schema.org/TouristAttractionShape-slogan> ;
+    void:triples 10 ;
+    void:distinctObjects 10 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/TouristAttractionShape> ;
+    shapetrospection:observed <https://schema.org/TouristAttractionShape-audio> ;
+    void:triples 5 ;
+    void:distinctObjects 5 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/TouristAttractionShape> ;
+    shapetrospection:observed <https://schema.org/TouristAttractionShape-thumbnail> ;
+    void:triples 5 ;
+    void:distinctObjects 5 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/TouristAttractionShape> ;
+    shapetrospection:observed <https://schema.org/TouristAttractionShape-touristType> ;
+    void:triples 1 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:observed <https://schema.org/TouristDestinationShape> ;
+    void:distinctSubjects 3 ;
+    void:properties 4 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/TouristDestinationShape> ;
+    shapetrospection:observed <https://schema.org/TouristDestinationShape-includesAttraction> ;
+    void:triples 179 ;
+    void:distinctObjects 179 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/TouristDestinationShape> ;
+    shapetrospection:observed <https://schema.org/TouristDestinationShape-name> ;
+    void:triples 3 ;
+    void:distinctObjects 3 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/TouristDestinationShape> ;
+    shapetrospection:observed <https://schema.org/TouristDestinationShape-name-langString> ;
+    void:triples 2 ;
+    void:distinctObjects 2 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/TouristDestinationShape> ;
+    shapetrospection:observed <https://schema.org/TouristDestinationShape-name-string> ;
+    void:triples 1 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/TouristDestinationShape> ;
+    shapetrospection:observed <https://schema.org/TouristDestinationShape-image> ;
+    void:triples 2 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/TouristDestinationShape> ;
+    shapetrospection:observed <https://schema.org/TouristDestinationShape-description> ;
+    void:triples 1 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:observed <https://schema.org/TouristInformationCenterShape> ;
+    void:distinctSubjects 1 ;
+    void:properties 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/TouristInformationCenterShape> ;
+    shapetrospection:observed <https://schema.org/TouristInformationCenterShape-name> ;
+    void:triples 1 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:observed <https://schema.org/accessibilityFeatureShape> ;
+    void:distinctSubjects 45 ;
+    void:properties 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://schema.org/accessibilityFeatureShape> ;
+    shapetrospection:observed <https://schema.org/accessibilityFeatureShape-name> ;
+    void:triples 45 ;
+    void:distinctObjects 45 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:observed <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape> ;
+    void:distinctSubjects 76 ;
+    void:properties 11 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape> ;
+    shapetrospection:observed <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape-action> ;
+    void:triples 76 ;
+    void:distinctObjects 7 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape> ;
+    shapetrospection:observed <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape-actor> ;
+    void:triples 76 ;
+    void:distinctObjects 3 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape> ;
+    shapetrospection:observed <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape-product> ;
+    void:triples 76 ;
+    void:distinctObjects 27 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape> ;
+    shapetrospection:observed <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape-time> ;
+    void:triples 76 ;
+    void:distinctObjects 76 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape> ;
+    shapetrospection:observed <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape-toStatus> ;
+    void:triples 74 ;
+    void:distinctObjects 3 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape> ;
+    shapetrospection:observed <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape-summary> ;
+    void:triples 63 ;
+    void:distinctObjects 49 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape> ;
+    shapetrospection:observed <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape-summary-HTML> ;
+    void:triples 50 ;
+    void:distinctObjects 39 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape> ;
+    shapetrospection:observed <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape-summary-string> ;
+    void:triples 13 ;
+    void:distinctObjects 10 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape> ;
+    shapetrospection:observed <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape-fromStatus> ;
+    void:triples 48 ;
+    void:distinctObjects 2 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape> ;
+    shapetrospection:observed <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape-snapshot> ;
+    void:triples 7 ;
+    void:distinctObjects 7 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape> ;
+    shapetrospection:observed <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape-editorialNote> ;
+    void:triples 4 ;
+    void:distinctObjects 1 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape> ;
+    shapetrospection:observed <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape-originalResource> ;
+    void:triples 2 ;
+    void:distinctObjects 2 .
+
+[] a qb:Observation ;
+    qb:dataSet <https://api.nightly.triplydb.com/datasets/DanielBeeke/efteling/sparql> ;
+    shapetrospection:shape <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape> ;
+    shapetrospection:observed <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape-originalResourceRevisionEvent> ;
+    void:triples 2 ;
+    void:distinctObjects 2 .
+
+<http://www.w3.org/2000/01/rdf-schema#ClassShape-comment>
+    a sh:PropertyShape ;
+    sh:path <http://www.w3.org/2000/01/rdf-schema#comment> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<http://www.w3.org/2000/01/rdf-schema#ClassShape-label>
+    a sh:PropertyShape ;
+    sh:path <http://www.w3.org/2000/01/rdf-schema#label> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<http://www.w3.org/2000/01/rdf-schema#ClassShape-name>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/name> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<http://www.w3.org/2000/01/rdf-schema#ClassShape-subClassOf>
+    a sh:PropertyShape ;
+    sh:path <http://www.w3.org/2000/01/rdf-schema#subClassOf> ;
+    sh:nodeKind sh:IRI ;
+    sh:maxCount 2 .
+
+<http://www.w3.org/2000/01/rdf-schema#ClassShape-abstract>
+    a sh:PropertyShape ;
+    sh:path <http://datashapes.org/dash#abstract> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:boolean ;
+    sh:maxCount 1 .
+
+<http://www.w3.org/2000/01/rdf-schema#ClassShape>
+    a sh:NodeShape ;
+    sh:targetClass <http://www.w3.org/2000/01/rdf-schema#Class> ;
+    sh:property <http://www.w3.org/2000/01/rdf-schema#ClassShape-comment> ;
+    sh:property <http://www.w3.org/2000/01/rdf-schema#ClassShape-label> ;
+    sh:property <http://www.w3.org/2000/01/rdf-schema#ClassShape-name> ;
+    sh:property <http://www.w3.org/2000/01/rdf-schema#ClassShape-subClassOf> ;
+    sh:property <http://www.w3.org/2000/01/rdf-schema#ClassShape-abstract> .
+
+<http://www.w3.org/2000/01/rdf-schema#DatatypeShape-label>
+    a sh:PropertyShape ;
+    sh:path <http://www.w3.org/2000/01/rdf-schema#label> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<http://www.w3.org/2000/01/rdf-schema#DatatypeShape-name>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/name> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<http://www.w3.org/2000/01/rdf-schema#DatatypeShape>
+    a sh:NodeShape ;
+    sh:targetClass <http://www.w3.org/2000/01/rdf-schema#Datatype> ;
+    sh:property <http://www.w3.org/2000/01/rdf-schema#DatatypeShape-label> ;
+    sh:property <http://www.w3.org/2000/01/rdf-schema#DatatypeShape-name> .
+
+<http://www.w3.org/2002/07/owl#ClassShape-comment>
+    a sh:PropertyShape ;
+    sh:path <http://www.w3.org/2000/01/rdf-schema#comment> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<http://www.w3.org/2002/07/owl#ClassShape-label>
+    a sh:PropertyShape ;
+    sh:path <http://www.w3.org/2000/01/rdf-schema#label> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<http://www.w3.org/2002/07/owl#ClassShape-name>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/name> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<http://www.w3.org/2002/07/owl#ClassShape-subClassOf>
+    a sh:PropertyShape ;
+    sh:path <http://www.w3.org/2000/01/rdf-schema#subClassOf> ;
+    sh:nodeKind sh:IRI ;
+    sh:maxCount 2 .
+
+<http://www.w3.org/2002/07/owl#ClassShape-abstract>
+    a sh:PropertyShape ;
+    sh:path <http://datashapes.org/dash#abstract> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:boolean ;
+    sh:maxCount 1 .
+
+<http://www.w3.org/2002/07/owl#ClassShape>
+    a sh:NodeShape ;
+    sh:targetClass <http://www.w3.org/2002/07/owl#Class> ;
+    sh:property <http://www.w3.org/2002/07/owl#ClassShape-comment> ;
+    sh:property <http://www.w3.org/2002/07/owl#ClassShape-label> ;
+    sh:property <http://www.w3.org/2002/07/owl#ClassShape-name> ;
+    sh:property <http://www.w3.org/2002/07/owl#ClassShape-subClassOf> ;
+    sh:property <http://www.w3.org/2002/07/owl#ClassShape-abstract> .
+
+<http://www.w3.org/2002/07/owl#DatatypePropertyShape>
+    a sh:NodeShape ;
+    sh:targetClass <http://www.w3.org/2002/07/owl#DatatypeProperty> .
+
+<http://www.w3.org/2002/07/owl#ObjectPropertyShape>
+    a sh:NodeShape ;
+    sh:targetClass <http://www.w3.org/2002/07/owl#ObjectProperty> .
+
+<http://www.w3.org/ns/shacl#NodeShapeShape-targetClass>
+    a sh:PropertyShape ;
+    sh:path <http://www.w3.org/ns/shacl#targetClass> ;
+    sh:nodeKind sh:IRI ;
+    sh:maxCount 1 .
+
+<http://www.w3.org/ns/shacl#NodeShapeShape-property>
+    a sh:PropertyShape ;
+    sh:path <http://www.w3.org/ns/shacl#property> ;
+    sh:nodeKind sh:IRI ;
+    sh:maxCount 4 .
+
+<http://www.w3.org/ns/shacl#NodeShapeShape-order>
+    a sh:PropertyShape ;
+    sh:path <http://www.w3.org/ns/shacl#order> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:decimal ;
+    sh:maxCount 1 .
+
+<http://www.w3.org/ns/shacl#NodeShapeShape-readOnly>
+    a sh:PropertyShape ;
+    sh:path <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/readOnly> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:boolean ;
+    sh:maxCount 1 .
+
+<http://www.w3.org/ns/shacl#NodeShapeShape-stem>
+    a sh:PropertyShape ;
+    sh:path <http://datashapes.org/dash#stem> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:string ;
+    sh:maxCount 1 .
+
+<http://www.w3.org/ns/shacl#NodeShapeShape>
+    a sh:NodeShape ;
+    sh:targetClass <http://www.w3.org/ns/shacl#NodeShape> ;
+    sh:property <http://www.w3.org/ns/shacl#NodeShapeShape-targetClass> ;
+    sh:property <http://www.w3.org/ns/shacl#NodeShapeShape-property> ;
+    sh:property <http://www.w3.org/ns/shacl#NodeShapeShape-order> ;
+    sh:property <http://www.w3.org/ns/shacl#NodeShapeShape-readOnly> ;
+    sh:property <http://www.w3.org/ns/shacl#NodeShapeShape-stem> .
+
+<http://www.w3.org/ns/shacl#PropertyGroupShape-label>
+    a sh:PropertyShape ;
+    sh:path <http://www.w3.org/2000/01/rdf-schema#label> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<http://www.w3.org/ns/shacl#PropertyGroupShape-name>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/name> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<http://www.w3.org/ns/shacl#PropertyGroupShape-order>
+    a sh:PropertyShape ;
+    sh:path <http://www.w3.org/ns/shacl#order> ;
+    sh:nodeKind sh:Literal ;
+    sh:or (
+        <http://www.w3.org/ns/shacl#PropertyGroupShape-order-decimal>
+        <http://www.w3.org/ns/shacl#PropertyGroupShape-order-integer>
+    ) ;
+    sh:maxCount 1 .
+
+<http://www.w3.org/ns/shacl#PropertyGroupShape>
+    a sh:NodeShape ;
+    sh:targetClass <http://www.w3.org/ns/shacl#PropertyGroup> ;
+    sh:property <http://www.w3.org/ns/shacl#PropertyGroupShape-label> ;
+    sh:property <http://www.w3.org/ns/shacl#PropertyGroupShape-name> ;
+    sh:property <http://www.w3.org/ns/shacl#PropertyGroupShape-order> .
+
+<http://www.w3.org/ns/shacl#PropertyGroupShape-order-decimal>
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:decimal .
+
+<http://www.w3.org/ns/shacl#PropertyGroupShape-order-integer>
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:integer ;
+    sh:deactivated true .
+
+<http://www.w3.org/ns/shacl#PropertyShapeShape-class>
+    a sh:PropertyShape ;
+    sh:path <http://www.w3.org/ns/shacl#class> ;
+    sh:nodeKind sh:IRI ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<http://www.w3.org/ns/shacl#PropertyShapeShape-description>
+    a sh:PropertyShape ;
+    sh:path <http://www.w3.org/ns/shacl#description> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<http://www.w3.org/ns/shacl#PropertyShapeShape-minLength>
+    a sh:PropertyShape ;
+    sh:path <http://www.w3.org/ns/shacl#minLength> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:integer ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<http://www.w3.org/ns/shacl#PropertyShapeShape-name>
+    a sh:PropertyShape ;
+    sh:path <http://www.w3.org/ns/shacl#name> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<http://www.w3.org/ns/shacl#PropertyShapeShape-path>
+    a sh:PropertyShape ;
+    sh:path <http://www.w3.org/ns/shacl#path> ;
+    sh:nodeKind sh:IRI ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<http://www.w3.org/ns/shacl#PropertyShapeShape>
+    a sh:NodeShape ;
+    sh:targetClass <http://www.w3.org/ns/shacl#PropertyShape> ;
+    sh:property <http://www.w3.org/ns/shacl#PropertyShapeShape-class> ;
+    sh:property <http://www.w3.org/ns/shacl#PropertyShapeShape-description> ;
+    sh:property <http://www.w3.org/ns/shacl#PropertyShapeShape-minLength> ;
+    sh:property <http://www.w3.org/ns/shacl#PropertyShapeShape-name> ;
+    sh:property <http://www.w3.org/ns/shacl#PropertyShapeShape-path> .
+
+<http://www.w3.org/ns/shacl#ProperyShapeShape-minLength>
+    a sh:PropertyShape ;
+    sh:path <http://www.w3.org/ns/shacl#minLength> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:integer ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<http://www.w3.org/ns/shacl#ProperyShapeShape-name>
+    a sh:PropertyShape ;
+    sh:path <http://www.w3.org/ns/shacl#name> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<http://www.w3.org/ns/shacl#ProperyShapeShape-path>
+    a sh:PropertyShape ;
+    sh:path <http://www.w3.org/ns/shacl#path> ;
+    sh:nodeKind sh:IRI ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<http://www.w3.org/ns/shacl#ProperyShapeShape-description>
+    a sh:PropertyShape ;
+    sh:path <http://www.w3.org/ns/shacl#description> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:string ;
+    sh:maxCount 1 .
+
+<http://www.w3.org/ns/shacl#ProperyShapeShape-group>
+    a sh:PropertyShape ;
+    sh:path <http://www.w3.org/ns/shacl#group> ;
+    sh:nodeKind sh:IRI ;
+    sh:maxCount 1 .
+
+<http://www.w3.org/ns/shacl#ProperyShapeShape-order>
+    a sh:PropertyShape ;
+    sh:path <http://www.w3.org/ns/shacl#order> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:decimal ;
+    sh:maxCount 1 .
+
+<http://www.w3.org/ns/shacl#ProperyShapeShape-datatype>
+    a sh:PropertyShape ;
+    sh:path <http://www.w3.org/ns/shacl#datatype> ;
+    sh:nodeKind sh:IRI ;
+    sh:maxCount 1 .
+
+<http://www.w3.org/ns/shacl#ProperyShapeShape-class>
+    a sh:PropertyShape ;
+    sh:path <http://www.w3.org/ns/shacl#class> ;
+    sh:nodeKind sh:IRI ;
+    sh:maxCount 1 .
+
+<http://www.w3.org/ns/shacl#ProperyShapeShape-maxCount>
+    a sh:PropertyShape ;
+    sh:path <http://www.w3.org/ns/shacl#maxCount> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:integer ;
+    sh:maxCount 1 .
+
+<http://www.w3.org/ns/shacl#ProperyShapeShape-minCount>
+    a sh:PropertyShape ;
+    sh:path <http://www.w3.org/ns/shacl#minCount> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:integer ;
+    sh:maxCount 1 .
+
+<http://www.w3.org/ns/shacl#ProperyShapeShape-useInSearch>
+    a sh:PropertyShape ;
+    sh:path <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/useInSearch> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:boolean ;
+    sh:maxCount 1 .
+
+<http://www.w3.org/ns/shacl#ProperyShapeShape-readOnly>
+    a sh:PropertyShape ;
+    sh:path <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/readOnly> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:boolean ;
+    sh:maxCount 1 .
+
+<http://www.w3.org/ns/shacl#ProperyShapeShape-languageIn>
+    a sh:PropertyShape ;
+    sh:path <http://www.w3.org/ns/shacl#languageIn> ;
+    sh:nodeKind sh:IRI ;
+    sh:maxCount 1 .
+
+<http://www.w3.org/ns/shacl#ProperyShapeShape-uniqueLang>
+    a sh:PropertyShape ;
+    sh:path <http://www.w3.org/ns/shacl#uniqueLang> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:boolean ;
+    sh:maxCount 1 .
+
+<http://www.w3.org/ns/shacl#ProperyShapeShape>
+    a sh:NodeShape ;
+    sh:targetClass <http://www.w3.org/ns/shacl#ProperyShape> ;
+    sh:property <http://www.w3.org/ns/shacl#ProperyShapeShape-minLength> ;
+    sh:property <http://www.w3.org/ns/shacl#ProperyShapeShape-name> ;
+    sh:property <http://www.w3.org/ns/shacl#ProperyShapeShape-path> ;
+    sh:property <http://www.w3.org/ns/shacl#ProperyShapeShape-description> ;
+    sh:property <http://www.w3.org/ns/shacl#ProperyShapeShape-group> ;
+    sh:property <http://www.w3.org/ns/shacl#ProperyShapeShape-order> ;
+    sh:property <http://www.w3.org/ns/shacl#ProperyShapeShape-datatype> ;
+    sh:property <http://www.w3.org/ns/shacl#ProperyShapeShape-class> ;
+    sh:property <http://www.w3.org/ns/shacl#ProperyShapeShape-maxCount> ;
+    sh:property <http://www.w3.org/ns/shacl#ProperyShapeShape-minCount> ;
+    sh:property <http://www.w3.org/ns/shacl#ProperyShapeShape-useInSearch> ;
+    sh:property <http://www.w3.org/ns/shacl#ProperyShapeShape-readOnly> ;
+    sh:property <http://www.w3.org/ns/shacl#ProperyShapeShape-languageIn> ;
+    sh:property <http://www.w3.org/ns/shacl#ProperyShapeShape-uniqueLang> .
+
+<https://schema.org/AnimalShelterShape-description>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/description> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype rdf:langString ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/AnimalShelterShape-name>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/name> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype rdf:langString ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/AnimalShelterShape>
+    a sh:NodeShape ;
+    sh:targetClass <https://schema.org/AnimalShelter> ;
+    sh:property <https://schema.org/AnimalShelterShape-description> ;
+    sh:property <https://schema.org/AnimalShelterShape-name> .
+
+<https://schema.org/AudienceShape-name>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/name> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/AudienceShape>
+    a sh:NodeShape ;
+    sh:targetClass <https://schema.org/Audience> ;
+    sh:property <https://schema.org/AudienceShape-name> .
+
+<https://schema.org/AudioObjectShape-contentUrl>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/contentUrl> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:anyURI ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/AudioObjectShape-encoding>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/encoding> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:anyURI ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/AudioObjectShape>
+    a sh:NodeShape ;
+    sh:targetClass <https://schema.org/AudioObject> ;
+    sh:property <https://schema.org/AudioObjectShape-contentUrl> ;
+    sh:property <https://schema.org/AudioObjectShape-encoding> .
+
+<https://schema.org/BusStopShape-name>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/name> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype rdf:langString ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/BusStopShape>
+    a sh:NodeShape ;
+    sh:targetClass <https://schema.org/BusStop> ;
+    sh:property <https://schema.org/BusStopShape-name> .
+
+<https://schema.org/EntryPointShape-name>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/name> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype rdf:langString ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/EntryPointShape-image>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/image> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:anyURI ;
+    sh:maxCount 1 .
+
+<https://schema.org/EntryPointShape>
+    a sh:NodeShape ;
+    sh:targetClass <https://schema.org/EntryPoint> ;
+    sh:property <https://schema.org/EntryPointShape-name> ;
+    sh:property <https://schema.org/EntryPointShape-image> .
+
+<https://schema.org/GolfCourseShape-image>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/image> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:anyURI ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/GolfCourseShape-name>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/name> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype rdf:langString ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/GolfCourseShape>
+    a sh:NodeShape ;
+    sh:targetClass <https://schema.org/GolfCourse> ;
+    sh:property <https://schema.org/GolfCourseShape-image> ;
+    sh:property <https://schema.org/GolfCourseShape-name> .
+
+<https://schema.org/HouseShape-image>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/image> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:anyURI ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/HouseShape-name>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/name> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype rdf:langString ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/HouseShape>
+    a sh:NodeShape ;
+    sh:targetClass <https://schema.org/House> ;
+    sh:property <https://schema.org/HouseShape-image> ;
+    sh:property <https://schema.org/HouseShape-name> .
+
+<https://schema.org/ImageObjectShape-contentUrl>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/contentUrl> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:anyURI ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/ImageObjectShape-name>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/name> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype rdf:langString ;
+    sh:maxCount 1 .
+
+<https://schema.org/ImageObjectShape>
+    a sh:NodeShape ;
+    sh:targetClass <https://schema.org/ImageObject> ;
+    sh:property <https://schema.org/ImageObjectShape-contentUrl> ;
+    sh:property <https://schema.org/ImageObjectShape-name> .
+
+<https://schema.org/LodgingBusinessShape-asWKT>
+    a sh:PropertyShape ;
+    sh:path <http://www.opengis.net/ont/geosparql#asWKT> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype <http://www.opengis.net/ont/geosparql#wktLiteral> ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/LodgingBusinessShape-description>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/description> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype rdf:HTML ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/LodgingBusinessShape-image>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/image> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:anyURI ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/LodgingBusinessShape-latitude>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/latitude> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/LodgingBusinessShape-longitude>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/longitude> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/LodgingBusinessShape-name>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/name> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype rdf:langString ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/LodgingBusinessShape-url>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/url> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:anyURI ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/LodgingBusinessShape>
+    a sh:NodeShape ;
+    sh:targetClass <https://schema.org/LodgingBusiness> ;
+    sh:property <https://schema.org/LodgingBusinessShape-asWKT> ;
+    sh:property <https://schema.org/LodgingBusinessShape-description> ;
+    sh:property <https://schema.org/LodgingBusinessShape-image> ;
+    sh:property <https://schema.org/LodgingBusinessShape-latitude> ;
+    sh:property <https://schema.org/LodgingBusinessShape-longitude> ;
+    sh:property <https://schema.org/LodgingBusinessShape-name> ;
+    sh:property <https://schema.org/LodgingBusinessShape-url> .
+
+<https://schema.org/MedicalBusinessShape-description>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/description> ;
+    sh:nodeKind sh:Literal ;
+    sh:or (
+        <https://schema.org/MedicalBusinessShape-description-HTML>
+        <https://schema.org/MedicalBusinessShape-description-langString>
+    ) ;
+    sh:minCount 2 ;
+    sh:maxCount 2 .
+
+<https://schema.org/MedicalBusinessShape-asWKT>
+    a sh:PropertyShape ;
+    sh:path <http://www.opengis.net/ont/geosparql#asWKT> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype <http://www.opengis.net/ont/geosparql#wktLiteral> ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/MedicalBusinessShape-image>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/image> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:anyURI ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/MedicalBusinessShape-latitude>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/latitude> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/MedicalBusinessShape-longitude>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/longitude> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/MedicalBusinessShape-name>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/name> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype rdf:langString ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/MedicalBusinessShape>
+    a sh:NodeShape ;
+    sh:targetClass <https://schema.org/MedicalBusiness> ;
+    sh:property <https://schema.org/MedicalBusinessShape-description> ;
+    sh:property <https://schema.org/MedicalBusinessShape-asWKT> ;
+    sh:property <https://schema.org/MedicalBusinessShape-image> ;
+    sh:property <https://schema.org/MedicalBusinessShape-latitude> ;
+    sh:property <https://schema.org/MedicalBusinessShape-longitude> ;
+    sh:property <https://schema.org/MedicalBusinessShape-name> .
+
+<https://schema.org/MedicalBusinessShape-description-HTML>
+    sh:nodeKind sh:Literal ;
+    sh:datatype rdf:HTML .
+
+<https://schema.org/MedicalBusinessShape-description-langString>
+    sh:nodeKind sh:Literal ;
+    sh:datatype rdf:langString .
+
+<https://schema.org/ParkShape-name>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/name> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype rdf:langString ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/ParkShape>
+    a sh:NodeShape ;
+    sh:targetClass <https://schema.org/Park> ;
+    sh:property <https://schema.org/ParkShape-name> .
+
+<https://schema.org/ParkingFacilityShape-name>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/name> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype rdf:langString ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/ParkingFacilityShape>
+    a sh:NodeShape ;
+    sh:targetClass <https://schema.org/ParkingFacility> ;
+    sh:property <https://schema.org/ParkingFacilityShape-name> .
+
+<https://schema.org/PerformingArtsTheaterShape-asWKT>
+    a sh:PropertyShape ;
+    sh:path <http://www.opengis.net/ont/geosparql#asWKT> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype <http://www.opengis.net/ont/geosparql#wktLiteral> ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/PerformingArtsTheaterShape-description>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/description> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype rdf:langString ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/PerformingArtsTheaterShape-image>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/image> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:anyURI ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/PerformingArtsTheaterShape-latitude>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/latitude> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/PerformingArtsTheaterShape-longitude>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/longitude> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/PerformingArtsTheaterShape-name>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/name> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype rdf:langString ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/PerformingArtsTheaterShape-url>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/url> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:anyURI ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/PerformingArtsTheaterShape>
+    a sh:NodeShape ;
+    sh:targetClass <https://schema.org/PerformingArtsTheater> ;
+    sh:property <https://schema.org/PerformingArtsTheaterShape-asWKT> ;
+    sh:property <https://schema.org/PerformingArtsTheaterShape-description> ;
+    sh:property <https://schema.org/PerformingArtsTheaterShape-image> ;
+    sh:property <https://schema.org/PerformingArtsTheaterShape-latitude> ;
+    sh:property <https://schema.org/PerformingArtsTheaterShape-longitude> ;
+    sh:property <https://schema.org/PerformingArtsTheaterShape-name> ;
+    sh:property <https://schema.org/PerformingArtsTheaterShape-url> .
+
+<https://schema.org/PlaceShape-description>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/description> ;
+    sh:nodeKind sh:Literal ;
+    sh:or (
+        <https://schema.org/PlaceShape-description-langString>
+        <https://schema.org/PlaceShape-description-HTML>
+    ) ;
+    sh:maxCount 2 .
+
+<https://schema.org/PlaceShape-name>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/name> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype rdf:langString ;
+    sh:minCount 1 ;
+    sh:maxCount 3 .
+
+<https://schema.org/PlaceShape-image>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/image> ;
+    sh:or (
+        <https://schema.org/PlaceShape-image-anyURI>
+        <https://schema.org/PlaceShape-image-IRI>
+    ) ;
+    sh:maxCount 2 .
+
+<https://schema.org/PlaceShape-asWKT>
+    a sh:PropertyShape ;
+    sh:path <http://www.opengis.net/ont/geosparql#asWKT> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype <http://www.opengis.net/ont/geosparql#wktLiteral> ;
+    sh:maxCount 1 .
+
+<https://schema.org/PlaceShape-latitude>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/latitude> ;
+    sh:nodeKind sh:Literal ;
+    sh:or (
+        <https://schema.org/PlaceShape-latitude-string>
+        <https://schema.org/PlaceShape-latitude-float>
+    ) ;
+    sh:maxCount 1 .
+
+<https://schema.org/PlaceShape-longitude>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/longitude> ;
+    sh:nodeKind sh:Literal ;
+    sh:or (
+        <https://schema.org/PlaceShape-longitude-string>
+        <https://schema.org/PlaceShape-longitude-float>
+    ) ;
+    sh:maxCount 1 .
+
+<https://schema.org/PlaceShape>
+    a sh:NodeShape ;
+    sh:targetClass <https://schema.org/Place> ;
+    sh:property <https://schema.org/PlaceShape-description> ;
+    sh:property <https://schema.org/PlaceShape-name> ;
+    sh:property <https://schema.org/PlaceShape-image> ;
+    sh:property <https://schema.org/PlaceShape-asWKT> ;
+    sh:property <https://schema.org/PlaceShape-latitude> ;
+    sh:property <https://schema.org/PlaceShape-longitude> .
+
+<https://schema.org/PlaceShape-description-langString>
+    sh:nodeKind sh:Literal ;
+    sh:datatype rdf:langString .
+
+<https://schema.org/PlaceShape-description-HTML>
+    sh:nodeKind sh:Literal ;
+    sh:datatype rdf:HTML ;
+    sh:deactivated true .
+
+<https://schema.org/PlaceShape-image-anyURI>
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:anyURI .
+
+<https://schema.org/PlaceShape-image-IRI>
+    sh:nodeKind sh:IRI ;
+    sh:deactivated true .
+
+<https://schema.org/PlaceShape-latitude-string>
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:string .
+
+<https://schema.org/PlaceShape-latitude-float>
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:float ;
+    sh:deactivated true .
+
+<https://schema.org/PlaceShape-longitude-string>
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:string .
+
+<https://schema.org/PlaceShape-longitude-float>
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:float ;
+    sh:deactivated true .
+
+<https://schema.org/PlayShape-accessibilityFeature>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/accessibilityFeature> ;
+    sh:nodeKind sh:IRI ;
+    sh:maxCount 4 .
+
+<https://schema.org/PlayShape-description>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/description> ;
+    sh:nodeKind sh:Literal ;
+    sh:or (
+        <https://schema.org/PlayShape-description-HTML>
+        <https://schema.org/PlayShape-description-langString>
+    ) ;
+    sh:minCount 2 ;
+    sh:maxCount 2 .
+
+<https://schema.org/PlayShape-asWKT>
+    a sh:PropertyShape ;
+    sh:path <http://www.opengis.net/ont/geosparql#asWKT> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype <http://www.opengis.net/ont/geosparql#wktLiteral> ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/PlayShape-image>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/image> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:anyURI ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/PlayShape-latitude>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/latitude> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/PlayShape-longitude>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/longitude> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/PlayShape-name>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/name> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype rdf:langString ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/PlayShape-url>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/url> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:anyURI ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/PlayShape>
+    a sh:NodeShape ;
+    sh:targetClass <https://schema.org/Play> ;
+    sh:property <https://schema.org/PlayShape-accessibilityFeature> ;
+    sh:property <https://schema.org/PlayShape-description> ;
+    sh:property <https://schema.org/PlayShape-asWKT> ;
+    sh:property <https://schema.org/PlayShape-image> ;
+    sh:property <https://schema.org/PlayShape-latitude> ;
+    sh:property <https://schema.org/PlayShape-longitude> ;
+    sh:property <https://schema.org/PlayShape-name> ;
+    sh:property <https://schema.org/PlayShape-url> .
+
+<https://schema.org/PlayShape-description-HTML>
+    sh:nodeKind sh:Literal ;
+    sh:datatype rdf:HTML .
+
+<https://schema.org/PlayShape-description-langString>
+    sh:nodeKind sh:Literal ;
+    sh:datatype rdf:langString .
+
+<https://schema.org/PlaygroundShape-name>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/name> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype rdf:langString ;
+    sh:minCount 1 ;
+    sh:maxCount 2 .
+
+<https://schema.org/PlaygroundShape-image>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/image> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:anyURI ;
+    sh:maxCount 1 .
+
+<https://schema.org/PlaygroundShape>
+    a sh:NodeShape ;
+    sh:targetClass <https://schema.org/Playground> ;
+    sh:property <https://schema.org/PlaygroundShape-name> ;
+    sh:property <https://schema.org/PlaygroundShape-image> .
+
+<https://schema.org/PublicSwimmingPoolShape-description>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/description> ;
+    sh:nodeKind sh:Literal ;
+    sh:or (
+        <https://schema.org/PublicSwimmingPoolShape-description-HTML>
+        <https://schema.org/PublicSwimmingPoolShape-description-langString>
+    ) ;
+    sh:minCount 2 ;
+    sh:maxCount 2 .
+
+<https://schema.org/PublicSwimmingPoolShape-asWKT>
+    a sh:PropertyShape ;
+    sh:path <http://www.opengis.net/ont/geosparql#asWKT> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype <http://www.opengis.net/ont/geosparql#wktLiteral> ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/PublicSwimmingPoolShape-image>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/image> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:anyURI ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/PublicSwimmingPoolShape-latitude>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/latitude> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/PublicSwimmingPoolShape-longitude>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/longitude> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/PublicSwimmingPoolShape-name>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/name> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype rdf:langString ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/PublicSwimmingPoolShape>
+    a sh:NodeShape ;
+    sh:targetClass <https://schema.org/PublicSwimmingPool> ;
+    sh:property <https://schema.org/PublicSwimmingPoolShape-description> ;
+    sh:property <https://schema.org/PublicSwimmingPoolShape-asWKT> ;
+    sh:property <https://schema.org/PublicSwimmingPoolShape-image> ;
+    sh:property <https://schema.org/PublicSwimmingPoolShape-latitude> ;
+    sh:property <https://schema.org/PublicSwimmingPoolShape-longitude> ;
+    sh:property <https://schema.org/PublicSwimmingPoolShape-name> .
+
+<https://schema.org/PublicSwimmingPoolShape-description-HTML>
+    sh:nodeKind sh:Literal ;
+    sh:datatype rdf:HTML .
+
+<https://schema.org/PublicSwimmingPoolShape-description-langString>
+    sh:nodeKind sh:Literal ;
+    sh:datatype rdf:langString .
+
+<https://schema.org/RecyclingCenterShape-name>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/name> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype rdf:langString ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/RecyclingCenterShape>
+    a sh:NodeShape ;
+    sh:targetClass <https://schema.org/RecyclingCenter> ;
+    sh:property <https://schema.org/RecyclingCenterShape-name> .
+
+<https://schema.org/RestaurantShape-description>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/description> ;
+    sh:or (
+        <https://schema.org/RestaurantShape-description-HTML>
+        <https://schema.org/RestaurantShape-description-langString>
+        <https://schema.org/RestaurantShape-description-IRI>
+        <https://schema.org/RestaurantShape-description-bla>
+    ) ;
+    sh:maxCount 3 .
+
+<https://schema.org/RestaurantShape-accessibilityFeature>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/accessibilityFeature> ;
+    sh:nodeKind sh:IRI ;
+    sh:maxCount 7 .
+
+<https://schema.org/RestaurantShape-name>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/name> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype rdf:langString ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/RestaurantShape-image>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/image> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:anyURI ;
+    sh:maxCount 1 .
+
+<https://schema.org/RestaurantShape-asWKT>
+    a sh:PropertyShape ;
+    sh:path <http://www.opengis.net/ont/geosparql#asWKT> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype <http://www.opengis.net/ont/geosparql#wktLiteral> ;
+    sh:maxCount 1 .
+
+<https://schema.org/RestaurantShape-latitude>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/latitude> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:string ;
+    sh:maxCount 1 .
+
+<https://schema.org/RestaurantShape-longitude>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/longitude> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:string ;
+    sh:maxCount 1 .
+
+<https://schema.org/RestaurantShape-url>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/url> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:anyURI ;
+    sh:maxCount 1 .
+
+<https://schema.org/RestaurantShape>
+    a sh:NodeShape ;
+    sh:targetClass <https://schema.org/Restaurant> ;
+    sh:property <https://schema.org/RestaurantShape-description> ;
+    sh:property <https://schema.org/RestaurantShape-accessibilityFeature> ;
+    sh:property <https://schema.org/RestaurantShape-name> ;
+    sh:property <https://schema.org/RestaurantShape-image> ;
+    sh:property <https://schema.org/RestaurantShape-asWKT> ;
+    sh:property <https://schema.org/RestaurantShape-latitude> ;
+    sh:property <https://schema.org/RestaurantShape-longitude> ;
+    sh:property <https://schema.org/RestaurantShape-url> .
+
+<https://schema.org/RestaurantShape-description-HTML>
+    sh:nodeKind sh:Literal ;
+    sh:datatype rdf:HTML .
+
+<https://schema.org/RestaurantShape-description-langString>
+    sh:nodeKind sh:Literal ;
+    sh:datatype rdf:langString ;
+    sh:deactivated true .
+
+<https://schema.org/RestaurantShape-description-IRI>
+    sh:nodeKind sh:IRI ;
+    sh:deactivated true .
+
+<https://schema.org/RestaurantShape-description-bla>
+    sh:nodeKind sh:Literal ;
+    sh:datatype <https://schema.org/bla> ;
+    sh:deactivated true .
+
+<https://schema.org/ShortStoryShape-description>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/description> ;
+    sh:nodeKind sh:Literal ;
+    sh:or (
+        <https://schema.org/ShortStoryShape-description-HTML>
+        <https://schema.org/ShortStoryShape-description-langString>
+    ) ;
+    sh:minCount 2 ;
+    sh:maxCount 2 .
+
+<https://schema.org/ShortStoryShape-asWKT>
+    a sh:PropertyShape ;
+    sh:path <http://www.opengis.net/ont/geosparql#asWKT> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype <http://www.opengis.net/ont/geosparql#wktLiteral> ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/ShortStoryShape-image>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/image> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:anyURI ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/ShortStoryShape-latitude>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/latitude> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/ShortStoryShape-longitude>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/longitude> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/ShortStoryShape-name>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/name> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype rdf:langString ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/ShortStoryShape-url>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/url> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:anyURI ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/ShortStoryShape-audience>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/audience> ;
+    sh:nodeKind sh:IRI ;
+    sh:maxCount 2 .
+
+<https://schema.org/ShortStoryShape-accessibilityFeature>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/accessibilityFeature> ;
+    sh:nodeKind sh:IRI ;
+    sh:maxCount 4 .
+
+<https://schema.org/ShortStoryShape>
+    a sh:NodeShape ;
+    sh:targetClass <https://schema.org/ShortStory> ;
+    sh:property <https://schema.org/ShortStoryShape-description> ;
+    sh:property <https://schema.org/ShortStoryShape-asWKT> ;
+    sh:property <https://schema.org/ShortStoryShape-image> ;
+    sh:property <https://schema.org/ShortStoryShape-latitude> ;
+    sh:property <https://schema.org/ShortStoryShape-longitude> ;
+    sh:property <https://schema.org/ShortStoryShape-name> ;
+    sh:property <https://schema.org/ShortStoryShape-url> ;
+    sh:property <https://schema.org/ShortStoryShape-audience> ;
+    sh:property <https://schema.org/ShortStoryShape-accessibilityFeature> .
+
+<https://schema.org/ShortStoryShape-description-HTML>
+    sh:nodeKind sh:Literal ;
+    sh:datatype rdf:HTML .
+
+<https://schema.org/ShortStoryShape-description-langString>
+    sh:nodeKind sh:Literal ;
+    sh:datatype rdf:langString .
+
+<https://schema.org/TouristAttractionShape-accessibilityFeature>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/accessibilityFeature> ;
+    sh:nodeKind sh:IRI ;
+    sh:maxCount 10 .
+
+<https://schema.org/TouristAttractionShape-description>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/description> ;
+    sh:nodeKind sh:Literal ;
+    sh:or (
+        <https://schema.org/TouristAttractionShape-description-langString>
+        <https://schema.org/TouristAttractionShape-description-HTML>
+    ) ;
+    sh:maxCount 3 .
+
+<https://schema.org/TouristAttractionShape-name>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/name> ;
+    sh:nodeKind sh:Literal ;
+    sh:or (
+        <https://schema.org/TouristAttractionShape-name-langString>
+        <https://schema.org/TouristAttractionShape-name-string>
+    ) ;
+    sh:minCount 1 ;
+    sh:maxCount 2 .
+
+<https://schema.org/TouristAttractionShape-audience>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/audience> ;
+    sh:nodeKind sh:IRI ;
+    sh:maxCount 2 .
+
+<https://schema.org/TouristAttractionShape-asWKT>
+    a sh:PropertyShape ;
+    sh:path <http://www.opengis.net/ont/geosparql#asWKT> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype <http://www.opengis.net/ont/geosparql#wktLiteral> ;
+    sh:maxCount 1 .
+
+<https://schema.org/TouristAttractionShape-image>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/image> ;
+    sh:nodeKind sh:Literal ;
+    sh:or (
+        <https://schema.org/TouristAttractionShape-image-anyURI>
+        <https://schema.org/TouristAttractionShape-image-string>
+    ) ;
+    sh:maxCount 1 .
+
+<https://schema.org/TouristAttractionShape-latitude>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/latitude> ;
+    sh:nodeKind sh:Literal ;
+    sh:or (
+        <https://schema.org/TouristAttractionShape-latitude-string>
+        <https://schema.org/TouristAttractionShape-latitude-float>
+    ) ;
+    sh:maxCount 1 .
+
+<https://schema.org/TouristAttractionShape-longitude>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/longitude> ;
+    sh:nodeKind sh:Literal ;
+    sh:or (
+        <https://schema.org/TouristAttractionShape-longitude-string>
+        <https://schema.org/TouristAttractionShape-longitude-float>
+    ) ;
+    sh:maxCount 1 .
+
+<https://schema.org/TouristAttractionShape-url>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/url> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:anyURI ;
+    sh:maxCount 1 .
+
+<https://schema.org/TouristAttractionShape-includesAttraction>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/includesAttraction> ;
+    sh:nodeKind sh:IRI ;
+    sh:maxCount 14 .
+
+<https://schema.org/TouristAttractionShape-slogan>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/slogan> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype rdf:langString ;
+    sh:maxCount 2 .
+
+<https://schema.org/TouristAttractionShape-audio>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/audio> ;
+    sh:nodeKind sh:IRI ;
+    sh:maxCount 1 .
+
+<https://schema.org/TouristAttractionShape-thumbnail>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/thumbnail> ;
+    sh:nodeKind sh:IRI ;
+    sh:maxCount 1 .
+
+<https://schema.org/TouristAttractionShape-touristType>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/touristType> ;
+    sh:nodeKind sh:IRI ;
+    sh:maxCount 1 .
+
+<https://schema.org/TouristAttractionShape>
+    a sh:NodeShape ;
+    sh:targetClass <https://schema.org/TouristAttraction> ;
+    sh:property <https://schema.org/TouristAttractionShape-accessibilityFeature> ;
+    sh:property <https://schema.org/TouristAttractionShape-description> ;
+    sh:property <https://schema.org/TouristAttractionShape-name> ;
+    sh:property <https://schema.org/TouristAttractionShape-audience> ;
+    sh:property <https://schema.org/TouristAttractionShape-asWKT> ;
+    sh:property <https://schema.org/TouristAttractionShape-image> ;
+    sh:property <https://schema.org/TouristAttractionShape-latitude> ;
+    sh:property <https://schema.org/TouristAttractionShape-longitude> ;
+    sh:property <https://schema.org/TouristAttractionShape-url> ;
+    sh:property <https://schema.org/TouristAttractionShape-includesAttraction> ;
+    sh:property <https://schema.org/TouristAttractionShape-slogan> ;
+    sh:property <https://schema.org/TouristAttractionShape-audio> ;
+    sh:property <https://schema.org/TouristAttractionShape-thumbnail> ;
+    sh:property <https://schema.org/TouristAttractionShape-touristType> .
+
+<https://schema.org/TouristAttractionShape-description-langString>
+    sh:nodeKind sh:Literal ;
+    sh:datatype rdf:langString .
+
+<https://schema.org/TouristAttractionShape-description-HTML>
+    sh:nodeKind sh:Literal ;
+    sh:datatype rdf:HTML ;
+    sh:deactivated true .
+
+<https://schema.org/TouristAttractionShape-name-langString>
+    sh:nodeKind sh:Literal ;
+    sh:datatype rdf:langString .
+
+<https://schema.org/TouristAttractionShape-name-string>
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:string ;
+    sh:deactivated true .
+
+<https://schema.org/TouristAttractionShape-image-anyURI>
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:anyURI .
+
+<https://schema.org/TouristAttractionShape-image-string>
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:string ;
+    sh:deactivated true .
+
+<https://schema.org/TouristAttractionShape-latitude-string>
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:string .
+
+<https://schema.org/TouristAttractionShape-latitude-float>
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:float ;
+    sh:deactivated true .
+
+<https://schema.org/TouristAttractionShape-longitude-string>
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:string .
+
+<https://schema.org/TouristAttractionShape-longitude-float>
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:float ;
+    sh:deactivated true .
+
+<https://schema.org/TouristDestinationShape-includesAttraction>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/includesAttraction> ;
+    sh:nodeKind sh:IRI ;
+    sh:minCount 5 ;
+    sh:maxCount 152 .
+
+<https://schema.org/TouristDestinationShape-name>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/name> ;
+    sh:nodeKind sh:Literal ;
+    sh:or (
+        <https://schema.org/TouristDestinationShape-name-langString>
+        <https://schema.org/TouristDestinationShape-name-string>
+    ) ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/TouristDestinationShape-image>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/image> ;
+    sh:nodeKind sh:IRI ;
+    sh:maxCount 1 .
+
+<https://schema.org/TouristDestinationShape-description>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/description> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:string ;
+    sh:maxCount 1 .
+
+<https://schema.org/TouristDestinationShape>
+    a sh:NodeShape ;
+    sh:targetClass <https://schema.org/TouristDestination> ;
+    sh:property <https://schema.org/TouristDestinationShape-includesAttraction> ;
+    sh:property <https://schema.org/TouristDestinationShape-name> ;
+    sh:property <https://schema.org/TouristDestinationShape-image> ;
+    sh:property <https://schema.org/TouristDestinationShape-description> .
+
+<https://schema.org/TouristDestinationShape-name-langString>
+    sh:nodeKind sh:Literal ;
+    sh:datatype rdf:langString .
+
+<https://schema.org/TouristDestinationShape-name-string>
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:string ;
+    sh:deactivated true .
+
+<https://schema.org/TouristInformationCenterShape-name>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/name> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype rdf:langString ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/TouristInformationCenterShape>
+    a sh:NodeShape ;
+    sh:targetClass <https://schema.org/TouristInformationCenter> ;
+    sh:property <https://schema.org/TouristInformationCenterShape-name> .
+
+<https://schema.org/accessibilityFeatureShape-name>
+    a sh:PropertyShape ;
+    sh:path <https://schema.org/name> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype rdf:langString ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://schema.org/accessibilityFeatureShape>
+    a sh:NodeShape ;
+    sh:targetClass <https://schema.org/accessibilityFeature> ;
+    sh:property <https://schema.org/accessibilityFeatureShape-name> .
+
+<https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape-action>
+    a sh:PropertyShape ;
+    sh:path <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/action> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape-actor>
+    a sh:PropertyShape ;
+    sh:path <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/actor> ;
+    sh:nodeKind sh:IRI ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape-product>
+    a sh:PropertyShape ;
+    sh:path <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/product> ;
+    sh:nodeKind sh:IRI ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape-time>
+    a sh:PropertyShape ;
+    sh:path <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/time> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:dateTime ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+<https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape-toStatus>
+    a sh:PropertyShape ;
+    sh:path <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/toStatus> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:string ;
+    sh:maxCount 1 .
+
+<https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape-summary>
+    a sh:PropertyShape ;
+    sh:path <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/summary> ;
+    sh:nodeKind sh:Literal ;
+    sh:or (
+        <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape-summary-HTML>
+        <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape-summary-string>
+    ) ;
+    sh:maxCount 1 .
+
+<https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape-fromStatus>
+    a sh:PropertyShape ;
+    sh:path <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/fromStatus> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:string ;
+    sh:maxCount 1 .
+
+<https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape-snapshot>
+    a sh:PropertyShape ;
+    sh:path <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/snapshot> ;
+    sh:nodeKind sh:IRI ;
+    sh:maxCount 1 .
+
+<https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape-editorialNote>
+    a sh:PropertyShape ;
+    sh:path <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/editorialNote> ;
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:string ;
+    sh:maxCount 1 .
+
+<https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape-originalResource>
+    a sh:PropertyShape ;
+    sh:path <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/originalResource> ;
+    sh:nodeKind sh:IRI ;
+    sh:maxCount 1 .
+
+<https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape-originalResourceRevisionEvent>
+    a sh:PropertyShape ;
+    sh:path <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/originalResourceRevisionEvent> ;
+    sh:nodeKind sh:IRI ;
+    sh:maxCount 1 .
+
+<https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape>
+    a sh:NodeShape ;
+    sh:targetClass <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/Event> ;
+    sh:property <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape-action> ;
+    sh:property <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape-actor> ;
+    sh:property <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape-product> ;
+    sh:property <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape-time> ;
+    sh:property <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape-toStatus> ;
+    sh:property <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape-summary> ;
+    sh:property <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape-fromStatus> ;
+    sh:property <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape-snapshot> ;
+    sh:property <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape-editorialNote> ;
+    sh:property <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape-originalResource> ;
+    sh:property <https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape-originalResourceRevisionEvent> .
+
+<https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape-summary-HTML>
+    sh:nodeKind sh:Literal ;
+    sh:datatype rdf:HTML .
+
+<https://triplydb.com/Triply/TriplyDB-instance-editor-vocabulary/EventShape-summary-string>
+    sh:nodeKind sh:Literal ;
+    sh:datatype xsd:string ;
+    sh:deactivated true .
