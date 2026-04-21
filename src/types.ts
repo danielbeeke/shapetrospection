@@ -33,6 +33,8 @@ export interface Predicate {
   distinctObjects?: number
   shInStatus: FetchStatus
   shIn?: string[] | null   // null = too many values; string[] = Turtle-serialised terms
+  shClassStatus: FetchStatus
+  shClass?: string[] | null // null = too many classes; string[] = class URIs
 }
 
 export interface ClassData {

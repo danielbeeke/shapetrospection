@@ -28,6 +28,7 @@ ORDER BY DESC(?count)`
     maxCountStatus: 'idle' as const,
     distinctObjectsStatus: 'idle' as const,
     shInStatus: 'idle' as const,
+    shClassStatus: 'idle' as const,
   }))
 }
 
@@ -156,6 +157,26 @@ export async function fetchTotalTriples(endpoint: string): Promise<number> {
   const rows = await sparqlQuery(endpoint, query)
   if (rows.length === 0 || !rows[0].triples) return 0
   return parseInt(rows[0].triples.value, 10)
+}
+
+const SH_CLASS_LIMIT = 5
+
+export async function fetchShClass(
+  endpoint: string,
+  classUri: string,
+  predicateUri: string,
+): Promise<string[] | null> {
+  const query = `SELECT DISTINCT ?class
+WHERE {
+  ?s a <${classUri}> ; <${predicateUri}> ?o .
+  FILTER(isIRI(?o))
+  ?o a ?class .
+}
+ORDER BY ?class
+LIMIT ${SH_CLASS_LIMIT + 1}`
+  const rows = await sparqlQuery(endpoint, query)
+  if (rows.length > SH_CLASS_LIMIT) return null
+  return rows.map(r => r.class.value)
 }
 
 const SH_IN_LIMIT = 10

@@ -49,7 +49,8 @@ ORDER BY DESC(?count)`;
     minCountStatus: "idle",
     maxCountStatus: "idle",
     distinctObjectsStatus: "idle",
-    shInStatus: "idle"
+    shInStatus: "idle",
+    shClassStatus: "idle"
   }));
 }
 async function fetchVariants(endpoint, classUri, predicateUri) {
@@ -147,6 +148,20 @@ async function fetchTotalTriples(endpoint) {
   if (rows.length === 0 || !rows[0].triples) return 0;
   return parseInt(rows[0].triples.value, 10);
 }
+var SH_CLASS_LIMIT = 5;
+async function fetchShClass(endpoint, classUri, predicateUri) {
+  const query = `SELECT DISTINCT ?class
+WHERE {
+  ?s a <${classUri}> ; <${predicateUri}> ?o .
+  FILTER(isIRI(?o))
+  ?o a ?class .
+}
+ORDER BY ?class
+LIMIT ${SH_CLASS_LIMIT + 1}`;
+  const rows = await sparqlQuery(endpoint, query);
+  if (rows.length > SH_CLASS_LIMIT) return null;
+  return rows.map((r) => r.class.value);
+}
 
 // src/turtle.ts
 function dtTurtle(uri) {
@@ -160,12 +175,18 @@ function variantSuffix(datatype) {
   const sep = Math.max(datatype.lastIndexOf("#"), datatype.lastIndexOf("/"));
   return sep >= 0 ? datatype.substring(sep + 1) : datatype;
 }
-function buildVariantEntry(propShapeUri, v, maxTriples) {
+function buildVariantEntry(propShapeUri, v, maxTriples, shClass) {
   const uri = `${propShapeUri}-${variantSuffix(v.datatype)}`;
   const defLines = [];
   const deactivated = v.triples < maxTriples;
   if (v.datatype === "IRI") {
     defLines.push(`    sh:nodeKind sh:IRI`);
+    if (shClass && shClass.length === 1) {
+      defLines.push(`    sh:class <${shClass[0]}>`);
+    } else if (shClass && shClass.length > 1) {
+      const orItems = shClass.map((c) => `[ sh:class <${c}> ]`).join(" ");
+      defLines.push(`    sh:or ( ${orItems} )`);
+    }
   } else if (v.datatype === "BlankNode") {
     defLines.push(`    sh:nodeKind sh:BlankNode`);
   } else {
@@ -179,6 +200,7 @@ function propertyShapeAttrs(p, propShapeUri) {
   const attrs = [];
   const variantDefs = [];
   const variantObservations = [];
+  const shClass = p.shClassStatus === "done" ? p.shClass : null;
   if (p.variantsStatus === "done" && p.variants && p.variants.length > 0) {
     const iri = p.variants.filter((v) => v.datatype === "IRI");
     const bn = p.variants.filter((v) => v.datatype === "BlankNode");
@@ -187,7 +209,9 @@ function propertyShapeAttrs(p, propShapeUri) {
     if (nodeKindCount > 1) {
       const allVariants = [...iri, ...bn, ...lit].sort((a, b) => b.triples - a.triples);
       const maxT = allVariants[0].triples;
-      const entries = allVariants.map((v) => buildVariantEntry(propShapeUri, v, maxT));
+      const entries = allVariants.map(
+        (v) => buildVariantEntry(propShapeUri, v, maxT, v.datatype === "IRI" ? shClass : void 0)
+      );
       const orRefs = entries.map((e) => `        <${e.skolemUri}>`);
       attrs.push(`    sh:or (
 ${orRefs.join("\n")}
@@ -199,8 +223,15 @@ ${orRefs.join("\n")}
         variantObservations.push({ uri: e.skolemUri, triples: e.triples, distinctObjects: e.distinctObjects });
       }
     } else {
-      if (iri.length > 0) attrs.push(`    sh:nodeKind sh:IRI`);
-      else if (bn.length > 0) attrs.push(`    sh:nodeKind sh:BlankNode`);
+      if (iri.length > 0) {
+        attrs.push(`    sh:nodeKind sh:IRI`);
+        if (shClass && shClass.length === 1) {
+          attrs.push(`    sh:class <${shClass[0]}>`);
+        } else if (shClass && shClass.length > 1) {
+          const orItems = shClass.map((c) => `[ sh:class <${c}> ]`).join(" ");
+          attrs.push(`    sh:or ( ${orItems} )`);
+        }
+      } else if (bn.length > 0) attrs.push(`    sh:nodeKind sh:BlankNode`);
       else if (lit.length > 0) attrs.push(`    sh:nodeKind sh:Literal`);
       if (lit.length === 1) {
         attrs.push(`    sh:datatype ${dtTurtle(lit[0].datatype)}`);
@@ -523,7 +554,7 @@ function parseArgs(argv) {
   return { endpoint, outputDir, summary, shex, forceRefresh, classFilter };
 }
 async function enrichPredicate(endpoint, classUri, p) {
-  const [variants, nodeKinds, minCount, maxCount, distinctObjects] = await Promise.all([
+  const [variants, nodeKinds, minCount, maxCount, distinctObjects, shClass] = await Promise.all([
     fetchVariants(endpoint, classUri, p.uri).catch((err) => {
       console.error(`    variants error for <${p.uri}>: ${err.message}`);
       return void 0;
@@ -543,6 +574,10 @@ async function enrichPredicate(endpoint, classUri, p) {
     fetchDistinctObjects(endpoint, classUri, p.uri).catch((err) => {
       console.error(`    distinctObjects error for <${p.uri}>: ${err.message}`);
       return void 0;
+    }),
+    fetchShClass(endpoint, classUri, p.uri).catch((err) => {
+      console.error(`    shClass error for <${p.uri}>: ${err.message}`);
+      return void 0;
     })
   ]);
   return {
@@ -557,7 +592,9 @@ async function enrichPredicate(endpoint, classUri, p) {
     maxCountStatus: maxCount !== void 0 ? "done" : "error",
     distinctObjects,
     distinctObjectsStatus: distinctObjects !== void 0 ? "done" : "error",
-    shInStatus: "idle"
+    shInStatus: "idle",
+    shClass,
+    shClassStatus: shClass !== void 0 ? "done" : "error"
   };
 }
 async function processClass(endpoint, classUri) {

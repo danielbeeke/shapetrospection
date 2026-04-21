@@ -33,6 +33,7 @@ function buildVariantEntry(
   propShapeUri: string,
   v: DatatypeVariant,
   maxTriples: number,
+  shClass?: string[] | null,
 ): VariantEntry {
   const uri = `${propShapeUri}-${variantSuffix(v.datatype)}`
   const defLines: string[] = []
@@ -40,6 +41,12 @@ function buildVariantEntry(
 
   if (v.datatype === 'IRI') {
     defLines.push(`    sh:nodeKind sh:IRI`)
+    if (shClass && shClass.length === 1) {
+      defLines.push(`    sh:class <${shClass[0]}>`)
+    } else if (shClass && shClass.length > 1) {
+      const orItems = shClass.map(c => `[ sh:class <${c}> ]`).join(' ')
+      defLines.push(`    sh:or ( ${orItems} )`)
+    }
   } else if (v.datatype === 'BlankNode') {
     defLines.push(`    sh:nodeKind sh:BlankNode`)
   } else {
@@ -56,6 +63,8 @@ function propertyShapeAttrs(p: Predicate, propShapeUri: string): PropertyShapeRe
   const variantDefs: string[] = []
   const variantObservations: PropertyShapeResult['variantObservations'] = []
 
+  const shClass = p.shClassStatus === 'done' ? p.shClass : null
+
   if (p.variantsStatus === 'done' && p.variants && p.variants.length > 0) {
     const iri = p.variants.filter(v => v.datatype === 'IRI')
     const bn  = p.variants.filter(v => v.datatype === 'BlankNode')
@@ -66,7 +75,9 @@ function propertyShapeAttrs(p: Predicate, propShapeUri: string): PropertyShapeRe
       // Mixed node kinds → sh:or with skolemized variants
       const allVariants = [...iri, ...bn, ...lit].sort((a, b) => b.triples - a.triples)
       const maxT = allVariants[0].triples
-      const entries = allVariants.map(v => buildVariantEntry(propShapeUri, v, maxT))
+      const entries = allVariants.map(v =>
+        buildVariantEntry(propShapeUri, v, maxT, v.datatype === 'IRI' ? shClass : undefined),
+      )
 
       const orRefs = entries.map(e => `        <${e.skolemUri}>`)
       attrs.push(`    sh:or (\n${orRefs.join('\n')}\n    )`)
@@ -78,8 +89,15 @@ function propertyShapeAttrs(p: Predicate, propShapeUri: string): PropertyShapeRe
         variantObservations.push({ uri: e.skolemUri, triples: e.triples, distinctObjects: e.distinctObjects })
       }
     } else {
-      if (iri.length > 0)      attrs.push(`    sh:nodeKind sh:IRI`)
-      else if (bn.length > 0)  attrs.push(`    sh:nodeKind sh:BlankNode`)
+      if (iri.length > 0) {
+        attrs.push(`    sh:nodeKind sh:IRI`)
+        if (shClass && shClass.length === 1) {
+          attrs.push(`    sh:class <${shClass[0]}>`)
+        } else if (shClass && shClass.length > 1) {
+          const orItems = shClass.map(c => `[ sh:class <${c}> ]`).join(' ')
+          attrs.push(`    sh:or ( ${orItems} )`)
+        }
+      } else if (bn.length > 0)  attrs.push(`    sh:nodeKind sh:BlankNode`)
       else if (lit.length > 0) attrs.push(`    sh:nodeKind sh:Literal`)
 
       if (lit.length === 1) {

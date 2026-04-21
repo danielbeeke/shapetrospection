@@ -10,6 +10,7 @@ import {
   fetchMaxCount,
   fetchDistinctObjects,
   fetchDistinctSubjects,
+  fetchShClass,
   fetchTotalTriples,
 } from './queries'
 import { generateTurtle } from './turtle'
@@ -68,7 +69,7 @@ function parseArgs(argv: string[]): CliArgs {
 }
 
 async function enrichPredicate(endpoint: string, classUri: string, p: Predicate): Promise<Predicate> {
-  const [variants, nodeKinds, minCount, maxCount, distinctObjects] = await Promise.all([
+  const [variants, nodeKinds, minCount, maxCount, distinctObjects, shClass] = await Promise.all([
     fetchVariants(endpoint, classUri, p.uri).catch(err => {
       console.error(`    variants error for <${p.uri}>: ${(err as Error).message}`)
       return undefined
@@ -89,6 +90,10 @@ async function enrichPredicate(endpoint: string, classUri: string, p: Predicate)
       console.error(`    distinctObjects error for <${p.uri}>: ${(err as Error).message}`)
       return undefined
     }),
+    fetchShClass(endpoint, classUri, p.uri).catch(err => {
+      console.error(`    shClass error for <${p.uri}>: ${(err as Error).message}`)
+      return undefined
+    }),
   ])
   return {
     ...p,
@@ -103,6 +108,8 @@ async function enrichPredicate(endpoint: string, classUri: string, p: Predicate)
     distinctObjects,
     distinctObjectsStatus: distinctObjects !== undefined ? 'done' : 'error',
     shInStatus: 'idle',
+    shClass,
+    shClassStatus: shClass !== undefined ? 'done' : 'error',
   }
 }
 
@@ -115,7 +122,10 @@ async function processClass(endpoint: string, classUri: string): Promise<ClassDa
     }),
   ])
 
-  const predicates = await Promise.all(rawPredicates.map(p => enrichPredicate(endpoint, classUri, p)))
+  const predicates: Predicate[] = []
+  for (const p of rawPredicates) {
+    predicates.push(await enrichPredicate(endpoint, classUri, p))
+  }
 
   return {
     uri: classUri,
@@ -161,12 +171,31 @@ async function main() {
     const triplesLabel = totalTriples !== null ? `, ${totalTriples.toLocaleString()} total triples` : ''
     console.error(`Found ${classes.length} classes${triplesLabel}`)
 
+    // Apply class filter early to avoid fetching data for unwanted classes
+    let targetClasses = classes
+    if (classFilter) {
+      const filter = classFilter.toLowerCase()
+      targetClasses = classes.filter(uri => {
+        const localName = uri.substring(Math.max(uri.lastIndexOf('#'), uri.lastIndexOf('/')) + 1)
+        return localName.toLowerCase().includes(filter)
+      })
+      console.error(`Filtered to ${targetClasses.length}/${classes.length} classes matching "${classFilter}"`)
+      if (targetClasses.length === 0) {
+        console.error('No classes matched. Available classes:')
+        for (const uri of classes) {
+          const ln = uri.substring(Math.max(uri.lastIndexOf('#'), uri.lastIndexOf('/')) + 1)
+          console.error(`  ${ln}`)
+        }
+        process.exit(1)
+      }
+    }
+
     classDataList = []
-    const p = progress({ max: Math.max(classes.length, 1) })
+    const p = progress({ max: Math.max(targetClasses.length, 1) })
     p.start('Indexing classes')
-    for (let i = 0; i < classes.length; i++) {
-      const classUri = classes[i]
-      p.advance(1, `Processing ${i + 1}/${classes.length}: ${classUri}`)
+    for (let i = 0; i < targetClasses.length; i++) {
+      const classUri = targetClasses[i]
+      p.advance(1, `Processing ${i + 1}/${targetClasses.length}: ${classUri}`)
       classDataList.push(await processClass(endpoint, classUri))
     }
     p.stop('Class indexing complete')
