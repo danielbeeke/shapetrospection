@@ -130,6 +130,12 @@ function propertyShapeAttrs(p: Predicate, propShapeUri: string): PropertyShapeRe
   if (p.shInStatus === 'done' && Array.isArray(p.shIn) && p.shIn.length > 0)
     attrs.push(`    sh:in ( ${p.shIn.join(' ')} )`)
 
+  if (p.languageInStatus === 'done' && p.languageIn && p.languageIn.length > 0)
+    attrs.push(`    sh:languageIn ( ${p.languageIn.map(l => `"${l}"`).join(' ')} )`)
+
+  if (p.uniqueLangStatus === 'done' && p.uniqueLang === true && p.languageIn && p.languageIn.length > 0)
+    attrs.push(`    sh:uniqueLang true`)
+
   return { attrs, variantDefs, variantObservations }
 }
 

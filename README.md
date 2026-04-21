@@ -37,15 +37,41 @@ npx shapetrospection https://example.org/sparql -c Restaurant
 
 # Summary table
 npx shapetrospection https://example.org/sparql -s
+
+# Syntax highlighting with rich (pip install rich-cli)
+npx shapetrospection https://example.org/sparql -c Restaurant \
+  | rich --syntax --lexer turtle --force-terminal -
+
+# ShEx with syntax highlighting
+npx shapetrospection https://example.org/sparql -c Restaurant --shex \
+  | rich --syntax --lexer turtle --force-terminal -
 ```
 
 ### Caching
 
-Results are cached in `~/.cache/shapetrospection/` after the first run. Subsequent runs against the same endpoint use the cache. Pass `-f` to re-fetch.
+Results are cached in `~/.cache/shapetrospection/` after the first run. Subsequent runs against the same endpoint use the cache. Pass `-f` to re-fetch. The `-c` filter applies at output time, so a full cached run gives you instant access to any class afterwards.
+
+### Discovered constraints
+
+The following SHACL constraints are inferred from the data:
+
+| Constraint | Description |
+|---|---|
+| `sh:targetClass` | The `rdf:type` class each shape describes |
+| `sh:path` | Predicates used by instances of the class |
+| `sh:nodeKind` | Whether values are IRIs, literals, or blank nodes |
+| `sh:datatype` | XSD/RDF datatype of literal values |
+| `sh:class` | `rdf:type` of IRI-valued objects (up to 5 classes) |
+| `sh:minCount` / `sh:maxCount` | Cardinality bounds across all instances |
+| `sh:in` | Enumerated value set (when ≤10 distinct values) |
+| `sh:languageIn` | Language tags present on language-tagged literals |
+| `sh:uniqueLang` | Whether each subject has at most one value per language |
+| `sh:or` | Mixed node kinds or multiple literal datatypes |
+| `sh:deactivated` | Marks minority variants in `sh:or` branches |
 
 ### Output format
 
-The default Turtle output separates SHACL shapes from statistical observations. Shapes contain structural constraints (node kinds, datatypes, cardinality), while statistics are reified as `qb:Observation` instances linked via `shapetrospection:observed`.
+The default Turtle output separates SHACL shapes from statistical observations. Shapes contain structural constraints, while statistics (triple counts, distinct subjects/objects) are reified as `qb:Observation` instances linked via `shapetrospection:observed`.
 
 ## Development
 

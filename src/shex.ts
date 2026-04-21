@@ -27,7 +27,12 @@ function formatCardinality(minCount?: number, maxCount?: number): string {
   return ` {${min},${max}}`
 }
 
-function predicateToShEx(p: Predicate): string {
+interface ShExLine {
+  expr: string    // the triple constraint expression
+  comment: string // trailing comment (empty if none)
+}
+
+function predicateToShEx(p: Predicate): ShExLine {
   let constraint: string
 
   if (p.shInStatus === 'done' && Array.isArray(p.shIn) && p.shIn.length > 0) {
@@ -50,7 +55,13 @@ function predicateToShEx(p: Predicate): string {
   }
 
   const card = formatCardinality(p.minCount, p.maxCount)
-  return `  <${p.uri}> ${constraint}${card}`
+  let comment = ''
+  if (p.languageInStatus === 'done' && p.languageIn && p.languageIn.length > 0) {
+    const parts: string[] = [`languageIn: ${p.languageIn.join(' ')}`]
+    if (p.uniqueLangStatus === 'done' && p.uniqueLang === true) parts.push('uniqueLang')
+    comment = `# ${parts.join('; ')}`
+  }
+  return { expr: `  <${p.uri}> ${constraint}${card}`, comment }
 }
 
 export function generateShEx(
@@ -76,8 +87,10 @@ export function generateShEx(
     lines.push(`<${shapeUri}> {`)
 
     for (let i = 0; i < predicates.length; i++) {
+      const { expr, comment } = predicateToShEx(predicates[i])
       const sep = i < predicates.length - 1 ? ' ;' : ''
-      lines.push(predicateToShEx(predicates[i]) + sep)
+      const suffix = comment ? `${sep}  ${comment}` : sep
+      lines.push(expr + suffix)
     }
 
     lines.push('}')

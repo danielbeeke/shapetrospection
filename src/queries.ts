@@ -29,6 +29,8 @@ ORDER BY DESC(?count)`
     distinctObjectsStatus: 'idle' as const,
     shInStatus: 'idle' as const,
     shClassStatus: 'idle' as const,
+    languageInStatus: 'idle' as const,
+    uniqueLangStatus: 'idle' as const,
   }))
 }
 
@@ -191,6 +193,38 @@ function termToTurtle(term: SparqlTerm): string {
   }
   if (term['xml:lang']) return `"${term.value}"@${term['xml:lang']}`
   return `"${term.value}"`
+}
+
+export async function fetchLanguageIn(
+  endpoint: string,
+  classUri: string,
+  predicateUri: string,
+): Promise<string[]> {
+  const query = `SELECT DISTINCT (LANG(?o) AS ?lang)
+WHERE {
+  ?s a <${classUri}> ; <${predicateUri}> ?o .
+  FILTER(isLiteral(?o) && LANG(?o) != "")
+}
+ORDER BY ?lang`
+  const rows = await sparqlQuery(endpoint, query)
+  return rows.map(r => r.lang.value)
+}
+
+export async function fetchUniqueLang(
+  endpoint: string,
+  classUri: string,
+  predicateUri: string,
+): Promise<boolean> {
+  const query = `SELECT (COUNT(*) AS ?dupes)
+WHERE {
+  ?s a <${classUri}> ;
+     <${predicateUri}> ?o1, ?o2 .
+  FILTER(?o1 != ?o2 && LANG(?o1) = LANG(?o2) && LANG(?o1) != "")
+}
+LIMIT 1`
+  const rows = await sparqlQuery(endpoint, query)
+  if (rows.length === 0 || !rows[0].dupes) return true
+  return parseInt(rows[0].dupes.value, 10) === 0
 }
 
 export async function fetchShIn(

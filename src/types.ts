@@ -35,6 +35,10 @@ export interface Predicate {
   shIn?: string[] | null   // null = too many values; string[] = Turtle-serialised terms
   shClassStatus: FetchStatus
   shClass?: string[] | null // null = too many classes; string[] = class URIs
+  languageInStatus: FetchStatus
+  languageIn?: string[]         // language tags, e.g. ["en", "nl", "de"]
+  uniqueLangStatus: FetchStatus
+  uniqueLang?: boolean          // true = at most one value per language per subject
 }
 
 export interface ClassData {

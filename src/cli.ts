@@ -1,6 +1,16 @@
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { progress } from '@clack/prompts'
+
+// Gracefully handle broken pipes (e.g. piping to `head` or `rich`)
+process.stdout.on('error', (err: NodeJS.ErrnoException) => {
+  if (err.code === 'EPIPE') process.exit(0)
+  throw err
+})
+process.stderr.on('error', (err: NodeJS.ErrnoException) => {
+  if (err.code === 'EPIPE') process.exit(0)
+  throw err
+})
 import {
   fetchClasses,
   fetchPredicates,
@@ -11,6 +21,9 @@ import {
   fetchDistinctObjects,
   fetchDistinctSubjects,
   fetchShClass,
+  fetchShIn,
+  fetchLanguageIn,
+  fetchUniqueLang,
   fetchTotalTriples,
 } from './queries'
 import { generateTurtle } from './turtle'
@@ -69,7 +82,7 @@ function parseArgs(argv: string[]): CliArgs {
 }
 
 async function enrichPredicate(endpoint: string, classUri: string, p: Predicate): Promise<Predicate> {
-  const [variants, nodeKinds, minCount, maxCount, distinctObjects, shClass] = await Promise.all([
+  const [variants, nodeKinds, minCount, maxCount, distinctObjects, shClass, shIn, languageIn, uniqueLang] = await Promise.all([
     fetchVariants(endpoint, classUri, p.uri).catch(err => {
       console.error(`    variants error for <${p.uri}>: ${(err as Error).message}`)
       return undefined
@@ -94,6 +107,18 @@ async function enrichPredicate(endpoint: string, classUri: string, p: Predicate)
       console.error(`    shClass error for <${p.uri}>: ${(err as Error).message}`)
       return undefined
     }),
+    fetchShIn(endpoint, classUri, p.uri).catch(err => {
+      console.error(`    shIn error for <${p.uri}>: ${(err as Error).message}`)
+      return undefined
+    }),
+    fetchLanguageIn(endpoint, classUri, p.uri).catch(err => {
+      console.error(`    languageIn error for <${p.uri}>: ${(err as Error).message}`)
+      return undefined
+    }),
+    fetchUniqueLang(endpoint, classUri, p.uri).catch(err => {
+      console.error(`    uniqueLang error for <${p.uri}>: ${(err as Error).message}`)
+      return undefined
+    }),
   ])
   return {
     ...p,
@@ -107,9 +132,14 @@ async function enrichPredicate(endpoint: string, classUri: string, p: Predicate)
     maxCountStatus: maxCount !== undefined ? 'done' : 'error',
     distinctObjects,
     distinctObjectsStatus: distinctObjects !== undefined ? 'done' : 'error',
-    shInStatus: 'idle',
+    shIn,
+    shInStatus: shIn !== undefined ? 'done' : 'error',
     shClass,
     shClassStatus: shClass !== undefined ? 'done' : 'error',
+    languageIn,
+    languageInStatus: languageIn !== undefined ? 'done' : 'error',
+    uniqueLang,
+    uniqueLangStatus: uniqueLang !== undefined ? 'done' : 'error',
   }
 }
 

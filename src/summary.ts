@@ -51,6 +51,10 @@ export function generateSummary(
         parts.push(`min=${p.minCount}`)
       if (p.maxCountStatus === 'done' && p.maxCount !== undefined && p.maxCount > 0)
         parts.push(`max=${p.maxCount}`)
+      if (p.languageInStatus === 'done' && p.languageIn && p.languageIn.length > 0)
+        parts.push(`langs=${p.languageIn.join(',')}`)
+      if (p.uniqueLangStatus === 'done' && p.uniqueLang === true && p.languageIn && p.languageIn.length > 0)
+        parts.push('uniqueLang')
       return {
         name: `  ${localName(p.uri)}`,
         triples: fmt(p.count),
