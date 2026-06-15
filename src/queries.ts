@@ -168,11 +168,22 @@ export async function fetchShClass(
   classUri: string,
   predicateUri: string,
 ): Promise<string[] | null> {
-  const query = `SELECT DISTINCT ?class
-WHERE {
-  ?s a <${classUri}> ; <${predicateUri}> ?o .
-  FILTER(isIRI(?o))
-  ?o a ?class .
+  // Only return classes where ALL IRI objects are typed as that class
+  const query = `SELECT ?class WHERE {
+  {
+    SELECT (COUNT(DISTINCT ?o) AS ?total) WHERE {
+      ?s a <${classUri}> ; <${predicateUri}> ?o .
+      FILTER(isIRI(?o))
+    }
+  }
+  {
+    SELECT ?class (COUNT(DISTINCT ?o) AS ?withClass) WHERE {
+      ?s a <${classUri}> ; <${predicateUri}> ?o .
+      FILTER(isIRI(?o))
+      ?o a ?class .
+    } GROUP BY ?class
+  }
+  FILTER(?withClass = ?total && ?total > 0)
 }
 ORDER BY ?class
 LIMIT ${SH_CLASS_LIMIT + 1}`

@@ -8,7 +8,7 @@
   --bg: #0f1117;
   --surface: #1a1d27;
   --surface-2: #222535;
-  --border: #2e3248;
+  --border: #404568;
   --accent: #6c63ff;
   --accent-dim: #3d3880;
   --accent-hover: #857dff;
@@ -16,8 +16,8 @@
   --warning: #f6a623;
   --danger: #e05252;
   --text: #e8eaf6;
-  --text-muted: #7b82a8;
-  --text-dim: #4a5070;
+  --text-muted: #b0b8d8;
+  --text-dim: #8892b0;
   --font-mono: "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
   --radius: 8px;
   --radius-lg: 12px;
@@ -443,7 +443,7 @@ body {
 }
 
 /* Turtle syntax highlight placeholders */
-.t-prefix   { color: #7b9ef0; }
+.t-prefix   { color: #90b4ff; }
 .t-keyword  { color: var(--accent-hover); }
 .t-iri      { color: #3ecf8e; }
 .t-string   { color: #f6a623; }
@@ -595,14 +595,14 @@ body {
 }
 
 .shin-toggle.off {
-  background: var(--surface-2);
-  border: 1px solid var(--border);
+  background: var(--bg);
+  border: 1px solid var(--text-dim);
   cursor: pointer;
 }
 
 .shin-toggle.off::after {
   left: 2px;
-  background: var(--text-dim);
+  background: var(--text-muted);
 }
 
 .shin-toggle.off:hover {

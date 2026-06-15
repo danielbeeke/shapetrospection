@@ -12,6 +12,7 @@ import {
   fetchDistinctObjects,
   fetchDistinctSubjects,
   fetchShIn,
+  fetchShClass,
   fetchTotalTriples,
 } from './queries'
 import { generateTurtle } from './turtle'
@@ -183,6 +184,7 @@ async function enrichClass(
     await ep('minCountStatus',        'minCount',        () => fetchMinCount(endpoint, classUri, p.uri))
     await ep('maxCountStatus',        'maxCount',        () => fetchMaxCount(endpoint, classUri, p.uri))
     await ep('distinctObjectsStatus', 'distinctObjects', () => fetchDistinctObjects(endpoint, classUri, p.uri))
+    await ep('shClassStatus',         'shClass',         () => fetchShClass(endpoint, classUri, p.uri))
     // sh:in is not auto-fetched — user triggers it per predicate
   }
 }
