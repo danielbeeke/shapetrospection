@@ -4,12 +4,12 @@ import type { DatatypeVariant, NodeKindVariant, Predicate, SparqlTerm } from './
 
 const CLASSES_QUERY = `SELECT DISTINCT ?class WHERE { [] a ?class . } ORDER BY ?class`
 
-export async function fetchClasses(endpoint: string): Promise<string[]> {
-  const rows = await sparqlQuery(endpoint, CLASSES_QUERY)
+export async function fetchClasses(endpoint: string, token: string | null = null): Promise<string[]> {
+  const rows = await sparqlQuery(endpoint, CLASSES_QUERY, token)
   return rows.map(b => b.class.value)
 }
 
-export async function fetchPredicates(endpoint: string, classUri: string): Promise<Predicate[]> {
+export async function fetchPredicates(endpoint: string, classUri: string, token: string | null = null): Promise<Predicate[]> {
   const query = `SELECT DISTINCT ?predicate (COUNT(?s) AS ?count)
 WHERE {
   ?s a <${classUri}> ;
@@ -18,7 +18,7 @@ WHERE {
 }
 GROUP BY ?predicate
 ORDER BY DESC(?count)`
-  const rows = await sparqlQuery(endpoint, query)
+  const rows = await sparqlQuery(endpoint, query, token)
   return rows.map(b => ({
     uri: b.predicate.value,
     count: parseInt(b.count.value, 10),
@@ -38,6 +38,7 @@ export async function fetchVariants(
   endpoint: string,
   classUri: string,
   predicateUri: string,
+  token: string | null = null,
 ): Promise<DatatypeVariant[]> {
   const query = `SELECT ?datatype (COUNT(?o) AS ?triples) (COUNT(DISTINCT ?o) AS ?distinctObjects)
 WHERE {
@@ -58,7 +59,7 @@ WHERE {
 }
 GROUP BY ?datatype
 ORDER BY DESC(?triples)`
-  const rows = await sparqlQuery(endpoint, query)
+  const rows = await sparqlQuery(endpoint, query, token)
   return rows.map(r => ({
     datatype: r.datatype.value === 'urn:shapetrospection:IRI' ? 'IRI'
             : r.datatype.value === 'urn:shapetrospection:BlankNode' ? 'BlankNode'
@@ -72,6 +73,7 @@ export async function fetchNodeKind(
   endpoint: string,
   classUri: string,
   predicateUri: string,
+  token: string | null = null,
 ): Promise<NodeKindVariant[]> {
   const query = `SELECT ?nodeKind (COUNT(?o) AS ?triples)
 WHERE {
@@ -83,7 +85,7 @@ WHERE {
 }
 GROUP BY ?nodeKind
 ORDER BY DESC(?triples)`
-  const rows = await sparqlQuery(endpoint, query)
+  const rows = await sparqlQuery(endpoint, query, token)
   return rows.map(r => ({
     nodeKind: r.nodeKind.value.replace('http://www.w3.org/ns/shacl#', 'sh:'),
     triples: parseInt(r.triples.value, 10),
@@ -94,6 +96,7 @@ export async function fetchMinCount(
   endpoint: string,
   classUri: string,
   predicateUri: string,
+  token: string | null = null,
 ): Promise<number> {
   const query = `SELECT (MIN(?cnt) AS ?minCount)
 WHERE {
@@ -103,7 +106,7 @@ WHERE {
     } GROUP BY ?s
   }
 }`
-  const rows = await sparqlQuery(endpoint, query)
+  const rows = await sparqlQuery(endpoint, query, token)
   if (rows.length === 0 || !rows[0].minCount) return 0
   return parseInt(rows[0].minCount.value, 10)
 }
@@ -112,6 +115,7 @@ export async function fetchMaxCount(
   endpoint: string,
   classUri: string,
   predicateUri: string,
+  token: string | null = null,
 ): Promise<number> {
   const query = `SELECT (MAX(?cnt) AS ?maxCount)
 WHERE {
@@ -121,7 +125,7 @@ WHERE {
     } GROUP BY ?s
   }
 }`
-  const rows = await sparqlQuery(endpoint, query)
+  const rows = await sparqlQuery(endpoint, query, token)
   if (rows.length === 0 || !rows[0].maxCount) return 0
   return parseInt(rows[0].maxCount.value, 10)
 }
@@ -130,13 +134,14 @@ export async function fetchDistinctObjects(
   endpoint: string,
   classUri: string,
   predicateUri: string,
+  token: string | null = null,
 ): Promise<number> {
   const query = `SELECT (COUNT(DISTINCT ?o) AS ?distinctObjects)
 WHERE {
   ?s a <${classUri}> ;
      <${predicateUri}> ?o .
 }`
-  const rows = await sparqlQuery(endpoint, query)
+  const rows = await sparqlQuery(endpoint, query, token)
   if (rows.length === 0 || !rows[0].distinctObjects) return 0
   return parseInt(rows[0].distinctObjects.value, 10)
 }
@@ -144,19 +149,20 @@ WHERE {
 export async function fetchDistinctSubjects(
   endpoint: string,
   classUri: string,
+  token: string | null = null,
 ): Promise<number> {
   const query = `SELECT (COUNT(DISTINCT ?s) AS ?distinctSubjects)
 WHERE {
   ?s a <${classUri}> .
 }`
-  const rows = await sparqlQuery(endpoint, query)
+  const rows = await sparqlQuery(endpoint, query, token)
   if (rows.length === 0 || !rows[0].distinctSubjects) return 0
   return parseInt(rows[0].distinctSubjects.value, 10)
 }
 
-export async function fetchTotalTriples(endpoint: string): Promise<number> {
+export async function fetchTotalTriples(endpoint: string, token: string | null = null): Promise<number> {
   const query = `SELECT (COUNT(*) AS ?triples) WHERE { ?s ?p ?o . }`
-  const rows = await sparqlQuery(endpoint, query)
+  const rows = await sparqlQuery(endpoint, query, token)
   if (rows.length === 0 || !rows[0].triples) return 0
   return parseInt(rows[0].triples.value, 10)
 }
@@ -167,6 +173,7 @@ export async function fetchShClass(
   endpoint: string,
   classUri: string,
   predicateUri: string,
+  token: string | null = null,
 ): Promise<string[] | null> {
   // Only return classes where ALL IRI objects are typed as that class
   const query = `SELECT ?class WHERE {
@@ -187,7 +194,7 @@ export async function fetchShClass(
 }
 ORDER BY ?class
 LIMIT ${SH_CLASS_LIMIT + 1}`
-  const rows = await sparqlQuery(endpoint, query)
+  const rows = await sparqlQuery(endpoint, query, token)
   if (rows.length > SH_CLASS_LIMIT) return null
   return rows.map(r => r.class.value)
 }
@@ -210,6 +217,7 @@ export async function fetchLanguageIn(
   endpoint: string,
   classUri: string,
   predicateUri: string,
+  token: string | null = null,
 ): Promise<string[]> {
   const query = `SELECT DISTINCT (LANG(?o) AS ?lang)
 WHERE {
@@ -217,7 +225,7 @@ WHERE {
   FILTER(isLiteral(?o) && LANG(?o) != "")
 }
 ORDER BY ?lang`
-  const rows = await sparqlQuery(endpoint, query)
+  const rows = await sparqlQuery(endpoint, query, token)
   return rows.map(r => r.lang.value)
 }
 
@@ -225,6 +233,7 @@ export async function fetchUniqueLang(
   endpoint: string,
   classUri: string,
   predicateUri: string,
+  token: string | null = null,
 ): Promise<boolean> {
   const query = `SELECT (COUNT(*) AS ?dupes)
 WHERE {
@@ -233,7 +242,7 @@ WHERE {
   FILTER(?o1 != ?o2 && LANG(?o1) = LANG(?o2) && LANG(?o1) != "")
 }
 LIMIT 1`
-  const rows = await sparqlQuery(endpoint, query)
+  const rows = await sparqlQuery(endpoint, query, token)
   if (rows.length === 0 || !rows[0].dupes) return true
   return parseInt(rows[0].dupes.value, 10) === 0
 }
@@ -242,6 +251,7 @@ export async function fetchShIn(
   endpoint: string,
   classUri: string,
   predicateUri: string,
+  token: string | null = null,
 ): Promise<string[] | null> {
   const query = `SELECT DISTINCT ?value
 WHERE {
@@ -250,7 +260,7 @@ WHERE {
 }
 ORDER BY ?value
 LIMIT ${SH_IN_LIMIT + 1}`
-  const rows = await sparqlQuery(endpoint, query)
+  const rows = await sparqlQuery(endpoint, query, token)
   if (rows.length > SH_IN_LIMIT) return null
   return rows.map(r => termToTurtle(r.value))
 }

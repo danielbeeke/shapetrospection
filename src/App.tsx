@@ -90,6 +90,15 @@ function IconX({ size = 10 }: { size?: number }) {
   )
 }
 
+function IconLock({ size = 13 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="11" width="18" height="11" rx="2"/>
+      <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+    </svg>
+  )
+}
+
 function IconHexagon({ size = 28 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -142,6 +151,7 @@ async function enrichClass(
   classUri: string,
   token: CancelToken,
   endpoint: string,
+  bearerToken: string | null,
   setClassData: Dispatch<SetStateAction<ClassData[]>>,
 ) {
   const gone = () => token.cancelled || token.cancelledClasses.has(classUri)
@@ -153,7 +163,7 @@ async function enrichClass(
 
   // Distinct subjects
   try {
-    const n = await fetchDistinctSubjects(endpoint, classUri)
+    const n = await fetchDistinctSubjects(endpoint, classUri, bearerToken)
     updateClass({ distinctSubjects: n })
   } catch (err) {
     console.error(`Failed to fetch distinct subjects for <${classUri}>:`, err)
@@ -164,7 +174,7 @@ async function enrichClass(
   // Predicates
   let predicates: Predicate[]
   try {
-    predicates = await fetchPredicates(endpoint, classUri)
+    predicates = await fetchPredicates(endpoint, classUri, bearerToken)
   } catch (err) {
     console.error(`Failed to fetch predicates for <${classUri}>:`, err)
     updateClass({ predicatesLoading: false, predicatesError: (err as Error).message })
@@ -179,12 +189,12 @@ async function enrichClass(
     const ep = (sk: string, vk: string, fn: () => Promise<unknown>) =>
       enrichPredicate(classUri, p.uri, sk, vk, fn, token, setClassData)
 
-    await ep('variantsStatus',        'variants',        () => fetchVariants(endpoint, classUri, p.uri))
-    await ep('nodeKindStatus',        'nodeKinds',       () => fetchNodeKind(endpoint, classUri, p.uri))
-    await ep('minCountStatus',        'minCount',        () => fetchMinCount(endpoint, classUri, p.uri))
-    await ep('maxCountStatus',        'maxCount',        () => fetchMaxCount(endpoint, classUri, p.uri))
-    await ep('distinctObjectsStatus', 'distinctObjects', () => fetchDistinctObjects(endpoint, classUri, p.uri))
-    await ep('shClassStatus',         'shClass',         () => fetchShClass(endpoint, classUri, p.uri))
+    await ep('variantsStatus',        'variants',        () => fetchVariants(endpoint, classUri, p.uri, bearerToken))
+    await ep('nodeKindStatus',        'nodeKinds',       () => fetchNodeKind(endpoint, classUri, p.uri, bearerToken))
+    await ep('minCountStatus',        'minCount',        () => fetchMinCount(endpoint, classUri, p.uri, bearerToken))
+    await ep('maxCountStatus',        'maxCount',        () => fetchMaxCount(endpoint, classUri, p.uri, bearerToken))
+    await ep('distinctObjectsStatus', 'distinctObjects', () => fetchDistinctObjects(endpoint, classUri, p.uri, bearerToken))
+    await ep('shClassStatus',         'shClass',         () => fetchShClass(endpoint, classUri, p.uri, bearerToken))
     // sh:in is not auto-fetched — user triggers it per predicate
   }
 }
@@ -355,6 +365,7 @@ function ClassPicker({ classes, loading, error, selected, onAdd, onRemove, onAdd
 
 export default function App() {
   const [endpoint, setEndpoint] = useState(() => localStorage.getItem('endpoint') ?? '')
+  const [bearerToken, setBearerToken] = useState(() => localStorage.getItem('bearerToken') ?? '')
   const [targetClasses, setTargetClasses] = useState<string[]>(() => {
     try { return JSON.parse(localStorage.getItem('targetClasses') ?? '[]') } catch { return [] }
   })
@@ -372,6 +383,7 @@ export default function App() {
   // Enrichment session management
   const cancelRef = useRef<CancelToken>({ cancelled: false, cancelledClasses: new Set() })
   const prevEndpointRef = useRef('')
+  const prevBearerTokenRef = useRef('')
   const prevClassesRef = useRef<string[]>([])
   const classDataRef = useRef<ClassData[]>([])
   classDataRef.current = classData
@@ -390,12 +402,12 @@ export default function App() {
       for (const p of d.predicates) {
         if (p.shInStatus === 'idle' && enabled.has(`${d.uri}::${p.uri}`)) {
           enrichPredicate(d.uri, p.uri, 'shInStatus', 'shIn',
-            () => fetchShIn(endpoint, d.uri, p.uri),
+            () => fetchShIn(endpoint, d.uri, p.uri, bearerToken || null),
             token, setClassData)
         }
       }
     }
-  }, [classData, endpoint])
+  }, [classData, endpoint, bearerToken])
 
   // Auto-regenerate turtle whenever classData changes
   useEffect(() => {
@@ -404,7 +416,7 @@ export default function App() {
     setTurtle(generateTurtle(endpoint, ready, totalTriples))
   }, [endpoint, classData, totalTriples])
 
-  // Fetch classes and total triples when endpoint changes
+  // Fetch classes and total triples when endpoint or token changes
   useEffect(() => {
     if (!endpoint) {
       setClasses([])
@@ -416,21 +428,23 @@ export default function App() {
     setClassesLoading(true)
     setClassesError(null)
     setTotalTriples(null)
-    fetchClasses(endpoint)
+    const bt = bearerToken || null
+    fetchClasses(endpoint, bt)
       .then(list => { if (!cancelled) { setClasses(list); setClassesLoading(false) } })
       .catch(err => { if (!cancelled) { console.error('Failed to fetch classes:', err); setClassesError(err.message); setClassesLoading(false) } })
-    fetchTotalTriples(endpoint)
+    fetchTotalTriples(endpoint, bt)
       .then(n => { if (!cancelled) setTotalTriples(n) })
       .catch(err => { console.error('Failed to fetch total triples:', err) })
     return () => { cancelled = true }
-  }, [endpoint])
+  }, [endpoint, bearerToken])
 
-  // Manage per-class enrichment when endpoint or targetClasses changes
+  // Manage per-class enrichment when endpoint, token, or targetClasses changes
   useEffect(() => {
-    const endpointChanged = prevEndpointRef.current !== endpoint
+    const connectionChanged = prevEndpointRef.current !== endpoint || prevBearerTokenRef.current !== bearerToken
     prevEndpointRef.current = endpoint ?? ''
+    prevBearerTokenRef.current = bearerToken
 
-    if (endpointChanged) {
+    if (connectionChanged) {
       cancelRef.current.cancelled = true
       cancelRef.current = { cancelled: false, cancelledClasses: new Set() }
       setClassData([])
@@ -451,6 +465,7 @@ export default function App() {
 
     // Start enrichment for newly added classes
     const added = targetClasses.filter(u => !prev.has(u))
+    const bt = bearerToken || null
     for (const classUri of added) {
       if (token.cancelled) break
       setClassData(prev => [...prev, {
@@ -460,11 +475,11 @@ export default function App() {
         predicatesError: null,
         predicates: [],
       }])
-      enrichClass(classUri, token, endpoint, setClassData)
+      enrichClass(classUri, token, endpoint, bt, setClassData)
     }
 
     prevClassesRef.current = [...targetClasses]
-  }, [endpoint, targetClasses])
+  }, [endpoint, bearerToken, targetClasses])
 
   function handleEndpointChange(value: string) {
     setEndpoint(value)
@@ -492,12 +507,20 @@ export default function App() {
     localStorage.setItem('targetClasses', JSON.stringify(next))
   }
 
+  function handleTokenChange(value: string) {
+    setBearerToken(value)
+    if (value) localStorage.setItem('bearerToken', value)
+    else localStorage.removeItem('bearerToken')
+    setTargetClasses([])
+    localStorage.removeItem('targetClasses')
+  }
+
   function handleFetchShIn(classUri: string, predUri: string) {
     const key = `${classUri}::${predUri}`
     shInEnabledRef.current.add(key)
     localStorage.setItem('shInEnabled', JSON.stringify([...shInEnabledRef.current]))
     enrichPredicate(classUri, predUri, 'shInStatus', 'shIn',
-      () => fetchShIn(endpoint, classUri, predUri),
+      () => fetchShIn(endpoint, classUri, predUri, bearerToken || null),
       cancelRef.current, setClassData)
   }
 
@@ -574,6 +597,20 @@ export default function App() {
               placeholder="https://…/sparql"
               value={endpoint}
               onChange={e => handleEndpointChange(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className="sidebar-section">
+          <div className="section-label">Bearer Token</div>
+          <div className="input-wrapper">
+            <IconLock size={13} />
+            <input
+              className="endpoint-input"
+              type="password"
+              placeholder="Optional auth token"
+              value={bearerToken}
+              onChange={e => handleTokenChange(e.target.value)}
             />
           </div>
         </div>

@@ -39,6 +39,7 @@ interface CliArgs {
   shex: boolean
   forceRefresh: boolean
   classFilter: string | null
+  token: string | null
 }
 
 function parseArgs(argv: string[]): CliArgs {
@@ -49,12 +50,15 @@ function parseArgs(argv: string[]): CliArgs {
   let shex = false
   let forceRefresh = false
   let classFilter: string | null = null
+  let token: string | null = null
 
   for (let i = 0; i < args.length; i++) {
     if ((args[i] === '-o' || args[i] === '--output') && args[i + 1]) {
       outputDir = args[++i]
     } else if ((args[i] === '-c' || args[i] === '--class') && args[i + 1]) {
       classFilter = args[++i]
+    } else if ((args[i] === '-t' || args[i] === '--token') && args[i + 1]) {
+      token = args[++i]
     } else if (args[i] === '-s' || args[i] === '--summary') {
       summary = true
     } else if (args[i] === '-x' || args[i] === '--shex') {
@@ -67,55 +71,56 @@ function parseArgs(argv: string[]): CliArgs {
   }
 
   if (!endpoint) {
-    console.error('Usage: shapetrospection <endpoint> [-o output] [-c class] [-s] [-x] [-f]')
+    console.error('Usage: shapetrospection <endpoint> [-o output] [-c class] [-t token] [-s] [-x] [-f]')
     console.error('')
     console.error('  endpoint            SPARQL endpoint URL')
     console.error('  -o, --output <file> Write output here (default: stdout)')
     console.error('  -c, --class <name>  Only process classes matching this name')
+    console.error('  -t, --token <token> Bearer token for Authorization header')
     console.error('  -s, --summary       Print a summary table instead of Turtle')
     console.error('  -x, --shex          Output ShEx compact syntax instead of Turtle')
     console.error('  -f, --force-refresh Ignore cached data and re-fetch from endpoint')
     process.exit(1)
   }
 
-  return { endpoint, outputDir, summary, shex, forceRefresh, classFilter }
+  return { endpoint, outputDir, summary, shex, forceRefresh, classFilter, token }
 }
 
-async function enrichPredicate(endpoint: string, classUri: string, p: Predicate): Promise<Predicate> {
+async function enrichPredicate(endpoint: string, classUri: string, p: Predicate, token: string | null): Promise<Predicate> {
   const [variants, nodeKinds, minCount, maxCount, distinctObjects, shClass, shIn, languageIn, uniqueLang] = await Promise.all([
-    fetchVariants(endpoint, classUri, p.uri).catch(err => {
+    fetchVariants(endpoint, classUri, p.uri, token).catch(err => {
       console.error(`    variants error for <${p.uri}>: ${(err as Error).message}`)
       return undefined
     }),
-    fetchNodeKind(endpoint, classUri, p.uri).catch(err => {
+    fetchNodeKind(endpoint, classUri, p.uri, token).catch(err => {
       console.error(`    nodeKind error for <${p.uri}>: ${(err as Error).message}`)
       return undefined
     }),
-    fetchMinCount(endpoint, classUri, p.uri).catch(err => {
+    fetchMinCount(endpoint, classUri, p.uri, token).catch(err => {
       console.error(`    minCount error for <${p.uri}>: ${(err as Error).message}`)
       return undefined
     }),
-    fetchMaxCount(endpoint, classUri, p.uri).catch(err => {
+    fetchMaxCount(endpoint, classUri, p.uri, token).catch(err => {
       console.error(`    maxCount error for <${p.uri}>: ${(err as Error).message}`)
       return undefined
     }),
-    fetchDistinctObjects(endpoint, classUri, p.uri).catch(err => {
+    fetchDistinctObjects(endpoint, classUri, p.uri, token).catch(err => {
       console.error(`    distinctObjects error for <${p.uri}>: ${(err as Error).message}`)
       return undefined
     }),
-    fetchShClass(endpoint, classUri, p.uri).catch(err => {
+    fetchShClass(endpoint, classUri, p.uri, token).catch(err => {
       console.error(`    shClass error for <${p.uri}>: ${(err as Error).message}`)
       return undefined
     }),
-    fetchShIn(endpoint, classUri, p.uri).catch(err => {
+    fetchShIn(endpoint, classUri, p.uri, token).catch(err => {
       console.error(`    shIn error for <${p.uri}>: ${(err as Error).message}`)
       return undefined
     }),
-    fetchLanguageIn(endpoint, classUri, p.uri).catch(err => {
+    fetchLanguageIn(endpoint, classUri, p.uri, token).catch(err => {
       console.error(`    languageIn error for <${p.uri}>: ${(err as Error).message}`)
       return undefined
     }),
-    fetchUniqueLang(endpoint, classUri, p.uri).catch(err => {
+    fetchUniqueLang(endpoint, classUri, p.uri, token).catch(err => {
       console.error(`    uniqueLang error for <${p.uri}>: ${(err as Error).message}`)
       return undefined
     }),
@@ -143,10 +148,10 @@ async function enrichPredicate(endpoint: string, classUri: string, p: Predicate)
   }
 }
 
-async function processClass(endpoint: string, classUri: string): Promise<ClassData> {
+async function processClass(endpoint: string, classUri: string, token: string | null): Promise<ClassData> {
   const [distinctSubjects, rawPredicates] = await Promise.all([
-    fetchDistinctSubjects(endpoint, classUri).catch(() => null),
-    fetchPredicates(endpoint, classUri).catch(err => {
+    fetchDistinctSubjects(endpoint, classUri, token).catch(() => null),
+    fetchPredicates(endpoint, classUri, token).catch(err => {
       console.error(`  predicate fetch failed: ${(err as Error).message}`)
       return [] as Predicate[]
     }),
@@ -154,7 +159,7 @@ async function processClass(endpoint: string, classUri: string): Promise<ClassDa
 
   const predicates: Predicate[] = []
   for (const p of rawPredicates) {
-    predicates.push(await enrichPredicate(endpoint, classUri, p))
+    predicates.push(await enrichPredicate(endpoint, classUri, p, token))
   }
 
   return {
@@ -179,7 +184,7 @@ function formatAge(cachedAt: string): string {
 }
 
 async function main() {
-  const { endpoint, outputDir: outputPath, summary, shex, forceRefresh, classFilter } = parseArgs(process.argv)
+  const { endpoint, outputDir: outputPath, summary, shex, forceRefresh, classFilter, token } = parseArgs(process.argv)
 
   let classDataList: ClassData[]
   let totalTriples: number | null
@@ -193,8 +198,8 @@ async function main() {
     console.error(`Connecting to ${endpoint}`)
 
     const [classes, tt] = await Promise.all([
-      fetchClasses(endpoint),
-      fetchTotalTriples(endpoint).catch(() => null),
+      fetchClasses(endpoint, token),
+      fetchTotalTriples(endpoint, token).catch(() => null),
     ])
     totalTriples = tt
 
@@ -226,7 +231,7 @@ async function main() {
     for (let i = 0; i < targetClasses.length; i++) {
       const classUri = targetClasses[i]
       p.advance(1, `Processing ${i + 1}/${targetClasses.length}: ${classUri}`)
-      classDataList.push(await processClass(endpoint, classUri))
+      classDataList.push(await processClass(endpoint, classUri, token))
     }
     p.stop('Class indexing complete')
 
