@@ -6,12 +6,12 @@ import { join as join2 } from "path";
 import { progress } from "@clack/prompts";
 
 // src/sparql.ts
-async function sparqlQuery(endpoint, query) {
+async function sparqlQuery(endpoint, query, token = null) {
   const url = new URL(endpoint);
   url.searchParams.set("query", query);
-  const res = await fetch(url.toString(), {
-    headers: { Accept: "application/sparql-results+json" }
-  });
+  const headers = { Accept: "application/sparql-results+json" };
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+  const res = await fetch(url.toString(), { headers });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const json = await res.json();
   return json.results.bindings;
@@ -27,11 +27,11 @@ var SHAPETROSPECTION = "urn:shapetrospection:";
 
 // src/queries.ts
 var CLASSES_QUERY = `SELECT DISTINCT ?class WHERE { [] a ?class . } ORDER BY ?class`;
-async function fetchClasses(endpoint) {
-  const rows = await sparqlQuery(endpoint, CLASSES_QUERY);
+async function fetchClasses(endpoint, token = null) {
+  const rows = await sparqlQuery(endpoint, CLASSES_QUERY, token);
   return rows.map((b) => b.class.value);
 }
-async function fetchPredicates(endpoint, classUri) {
+async function fetchPredicates(endpoint, classUri, token = null) {
   const query = `SELECT DISTINCT ?predicate (COUNT(?s) AS ?count)
 WHERE {
   ?s a <${classUri}> ;
@@ -40,7 +40,7 @@ WHERE {
 }
 GROUP BY ?predicate
 ORDER BY DESC(?count)`;
-  const rows = await sparqlQuery(endpoint, query);
+  const rows = await sparqlQuery(endpoint, query, token);
   return rows.map((b) => ({
     uri: b.predicate.value,
     count: parseInt(b.count.value, 10),
@@ -55,7 +55,7 @@ ORDER BY DESC(?count)`;
     uniqueLangStatus: "idle"
   }));
 }
-async function fetchVariants(endpoint, classUri, predicateUri) {
+async function fetchVariants(endpoint, classUri, predicateUri, token = null) {
   const query = `SELECT ?datatype (COUNT(?o) AS ?triples) (COUNT(DISTINCT ?o) AS ?distinctObjects)
 WHERE {
   {
@@ -75,14 +75,14 @@ WHERE {
 }
 GROUP BY ?datatype
 ORDER BY DESC(?triples)`;
-  const rows = await sparqlQuery(endpoint, query);
+  const rows = await sparqlQuery(endpoint, query, token);
   return rows.map((r) => ({
     datatype: r.datatype.value === "urn:shapetrospection:IRI" ? "IRI" : r.datatype.value === "urn:shapetrospection:BlankNode" ? "BlankNode" : r.datatype.value,
     triples: parseInt(r.triples.value, 10),
     distinctObjects: parseInt(r.distinctObjects.value, 10)
   }));
 }
-async function fetchNodeKind(endpoint, classUri, predicateUri) {
+async function fetchNodeKind(endpoint, classUri, predicateUri, token = null) {
   const query = `SELECT ?nodeKind (COUNT(?o) AS ?triples)
 WHERE {
   ?s a <${classUri}> ;
@@ -93,13 +93,13 @@ WHERE {
 }
 GROUP BY ?nodeKind
 ORDER BY DESC(?triples)`;
-  const rows = await sparqlQuery(endpoint, query);
+  const rows = await sparqlQuery(endpoint, query, token);
   return rows.map((r) => ({
     nodeKind: r.nodeKind.value.replace("http://www.w3.org/ns/shacl#", "sh:"),
     triples: parseInt(r.triples.value, 10)
   }));
 }
-async function fetchMinCount(endpoint, classUri, predicateUri) {
+async function fetchMinCount(endpoint, classUri, predicateUri, token = null) {
   const query = `SELECT (MIN(?cnt) AS ?minCount)
 WHERE {
   { SELECT ?s (COUNT(?o) AS ?cnt) WHERE {
@@ -108,11 +108,11 @@ WHERE {
     } GROUP BY ?s
   }
 }`;
-  const rows = await sparqlQuery(endpoint, query);
+  const rows = await sparqlQuery(endpoint, query, token);
   if (rows.length === 0 || !rows[0].minCount) return 0;
   return parseInt(rows[0].minCount.value, 10);
 }
-async function fetchMaxCount(endpoint, classUri, predicateUri) {
+async function fetchMaxCount(endpoint, classUri, predicateUri, token = null) {
   const query = `SELECT (MAX(?cnt) AS ?maxCount)
 WHERE {
   { SELECT ?s (COUNT(?o) AS ?cnt) WHERE {
@@ -121,37 +121,37 @@ WHERE {
     } GROUP BY ?s
   }
 }`;
-  const rows = await sparqlQuery(endpoint, query);
+  const rows = await sparqlQuery(endpoint, query, token);
   if (rows.length === 0 || !rows[0].maxCount) return 0;
   return parseInt(rows[0].maxCount.value, 10);
 }
-async function fetchDistinctObjects(endpoint, classUri, predicateUri) {
+async function fetchDistinctObjects(endpoint, classUri, predicateUri, token = null) {
   const query = `SELECT (COUNT(DISTINCT ?o) AS ?distinctObjects)
 WHERE {
   ?s a <${classUri}> ;
      <${predicateUri}> ?o .
 }`;
-  const rows = await sparqlQuery(endpoint, query);
+  const rows = await sparqlQuery(endpoint, query, token);
   if (rows.length === 0 || !rows[0].distinctObjects) return 0;
   return parseInt(rows[0].distinctObjects.value, 10);
 }
-async function fetchDistinctSubjects(endpoint, classUri) {
+async function fetchDistinctSubjects(endpoint, classUri, token = null) {
   const query = `SELECT (COUNT(DISTINCT ?s) AS ?distinctSubjects)
 WHERE {
   ?s a <${classUri}> .
 }`;
-  const rows = await sparqlQuery(endpoint, query);
+  const rows = await sparqlQuery(endpoint, query, token);
   if (rows.length === 0 || !rows[0].distinctSubjects) return 0;
   return parseInt(rows[0].distinctSubjects.value, 10);
 }
-async function fetchTotalTriples(endpoint) {
+async function fetchTotalTriples(endpoint, token = null) {
   const query = `SELECT (COUNT(*) AS ?triples) WHERE { ?s ?p ?o . }`;
-  const rows = await sparqlQuery(endpoint, query);
+  const rows = await sparqlQuery(endpoint, query, token);
   if (rows.length === 0 || !rows[0].triples) return 0;
   return parseInt(rows[0].triples.value, 10);
 }
 var SH_CLASS_LIMIT = 5;
-async function fetchShClass(endpoint, classUri, predicateUri) {
+async function fetchShClass(endpoint, classUri, predicateUri, token = null) {
   const query = `SELECT ?class WHERE {
   {
     SELECT (COUNT(DISTINCT ?o) AS ?total) WHERE {
@@ -170,31 +170,35 @@ async function fetchShClass(endpoint, classUri, predicateUri) {
 }
 ORDER BY ?class
 LIMIT ${SH_CLASS_LIMIT + 1}`;
-  const rows = await sparqlQuery(endpoint, query);
+  const rows = await sparqlQuery(endpoint, query, token);
   if (rows.length > SH_CLASS_LIMIT) return null;
   return rows.map((r) => r.class.value);
 }
 var SH_IN_LIMIT = 10;
+function turtleString(value) {
+  const escaped = value.replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/\t/g, "\\t");
+  return `"${escaped}"`;
+}
 function termToTurtle(term) {
   if (term.type === "uri") return `<${term.value}>`;
   if (term.datatype) {
     const dt = term.datatype.startsWith(XSD) ? `xsd:${term.datatype.slice(XSD.length)}` : `<${term.datatype}>`;
-    return `"${term.value}"^^${dt}`;
+    return `${turtleString(term.value)}^^${dt}`;
   }
-  if (term["xml:lang"]) return `"${term.value}"@${term["xml:lang"]}`;
-  return `"${term.value}"`;
+  if (term["xml:lang"]) return `${turtleString(term.value)}@${term["xml:lang"]}`;
+  return turtleString(term.value);
 }
-async function fetchLanguageIn(endpoint, classUri, predicateUri) {
+async function fetchLanguageIn(endpoint, classUri, predicateUri, token = null) {
   const query = `SELECT DISTINCT (LANG(?o) AS ?lang)
 WHERE {
   ?s a <${classUri}> ; <${predicateUri}> ?o .
   FILTER(isLiteral(?o) && LANG(?o) != "")
 }
 ORDER BY ?lang`;
-  const rows = await sparqlQuery(endpoint, query);
+  const rows = await sparqlQuery(endpoint, query, token);
   return rows.map((r) => r.lang.value);
 }
-async function fetchUniqueLang(endpoint, classUri, predicateUri) {
+async function fetchUniqueLang(endpoint, classUri, predicateUri, token = null) {
   const query = `SELECT (COUNT(*) AS ?dupes)
 WHERE {
   ?s a <${classUri}> ;
@@ -202,11 +206,11 @@ WHERE {
   FILTER(?o1 != ?o2 && LANG(?o1) = LANG(?o2) && LANG(?o1) != "")
 }
 LIMIT 1`;
-  const rows = await sparqlQuery(endpoint, query);
+  const rows = await sparqlQuery(endpoint, query, token);
   if (rows.length === 0 || !rows[0].dupes) return true;
   return parseInt(rows[0].dupes.value, 10) === 0;
 }
-async function fetchShIn(endpoint, classUri, predicateUri) {
+async function fetchShIn(endpoint, classUri, predicateUri, token = null) {
   const query = `SELECT DISTINCT ?value
 WHERE {
   ?s a <${classUri}> ;
@@ -214,7 +218,7 @@ WHERE {
 }
 ORDER BY ?value
 LIMIT ${SH_IN_LIMIT + 1}`;
-  const rows = await sparqlQuery(endpoint, query);
+  const rows = await sparqlQuery(endpoint, query, token);
   if (rows.length > SH_IN_LIMIT) return null;
   return rows.map((r) => termToTurtle(r.value));
 }
@@ -605,11 +609,14 @@ function parseArgs(argv) {
   let shex = false;
   let forceRefresh = false;
   let classFilter = null;
+  let token = null;
   for (let i = 0; i < args.length; i++) {
     if ((args[i] === "-o" || args[i] === "--output") && args[i + 1]) {
       outputDir = args[++i];
     } else if ((args[i] === "-c" || args[i] === "--class") && args[i + 1]) {
       classFilter = args[++i];
+    } else if ((args[i] === "-t" || args[i] === "--token") && args[i + 1]) {
+      token = args[++i];
     } else if (args[i] === "-s" || args[i] === "--summary") {
       summary = true;
     } else if (args[i] === "-x" || args[i] === "--shex") {
@@ -621,53 +628,54 @@ function parseArgs(argv) {
     }
   }
   if (!endpoint) {
-    console.error("Usage: shapetrospection <endpoint> [-o output] [-c class] [-s] [-x] [-f]");
+    console.error("Usage: shapetrospection <endpoint> [-o output] [-c class] [-t token] [-s] [-x] [-f]");
     console.error("");
     console.error("  endpoint            SPARQL endpoint URL");
     console.error("  -o, --output <file> Write output here (default: stdout)");
     console.error("  -c, --class <name>  Only process classes matching this name");
+    console.error("  -t, --token <token> Bearer token for Authorization header");
     console.error("  -s, --summary       Print a summary table instead of Turtle");
     console.error("  -x, --shex          Output ShEx compact syntax instead of Turtle");
     console.error("  -f, --force-refresh Ignore cached data and re-fetch from endpoint");
     process.exit(1);
   }
-  return { endpoint, outputDir, summary, shex, forceRefresh, classFilter };
+  return { endpoint, outputDir, summary, shex, forceRefresh, classFilter, token };
 }
-async function enrichPredicate(endpoint, classUri, p) {
+async function enrichPredicate(endpoint, classUri, p, token) {
   const [variants, nodeKinds, minCount, maxCount, distinctObjects, shClass, shIn, languageIn, uniqueLang] = await Promise.all([
-    fetchVariants(endpoint, classUri, p.uri).catch((err) => {
+    fetchVariants(endpoint, classUri, p.uri, token).catch((err) => {
       console.error(`    variants error for <${p.uri}>: ${err.message}`);
       return void 0;
     }),
-    fetchNodeKind(endpoint, classUri, p.uri).catch((err) => {
+    fetchNodeKind(endpoint, classUri, p.uri, token).catch((err) => {
       console.error(`    nodeKind error for <${p.uri}>: ${err.message}`);
       return void 0;
     }),
-    fetchMinCount(endpoint, classUri, p.uri).catch((err) => {
+    fetchMinCount(endpoint, classUri, p.uri, token).catch((err) => {
       console.error(`    minCount error for <${p.uri}>: ${err.message}`);
       return void 0;
     }),
-    fetchMaxCount(endpoint, classUri, p.uri).catch((err) => {
+    fetchMaxCount(endpoint, classUri, p.uri, token).catch((err) => {
       console.error(`    maxCount error for <${p.uri}>: ${err.message}`);
       return void 0;
     }),
-    fetchDistinctObjects(endpoint, classUri, p.uri).catch((err) => {
+    fetchDistinctObjects(endpoint, classUri, p.uri, token).catch((err) => {
       console.error(`    distinctObjects error for <${p.uri}>: ${err.message}`);
       return void 0;
     }),
-    fetchShClass(endpoint, classUri, p.uri).catch((err) => {
+    fetchShClass(endpoint, classUri, p.uri, token).catch((err) => {
       console.error(`    shClass error for <${p.uri}>: ${err.message}`);
       return void 0;
     }),
-    fetchShIn(endpoint, classUri, p.uri).catch((err) => {
+    fetchShIn(endpoint, classUri, p.uri, token).catch((err) => {
       console.error(`    shIn error for <${p.uri}>: ${err.message}`);
       return void 0;
     }),
-    fetchLanguageIn(endpoint, classUri, p.uri).catch((err) => {
+    fetchLanguageIn(endpoint, classUri, p.uri, token).catch((err) => {
       console.error(`    languageIn error for <${p.uri}>: ${err.message}`);
       return void 0;
     }),
-    fetchUniqueLang(endpoint, classUri, p.uri).catch((err) => {
+    fetchUniqueLang(endpoint, classUri, p.uri, token).catch((err) => {
       console.error(`    uniqueLang error for <${p.uri}>: ${err.message}`);
       return void 0;
     })
@@ -694,17 +702,17 @@ async function enrichPredicate(endpoint, classUri, p) {
     uniqueLangStatus: uniqueLang !== void 0 ? "done" : "error"
   };
 }
-async function processClass(endpoint, classUri) {
+async function processClass(endpoint, classUri, token) {
   const [distinctSubjects, rawPredicates] = await Promise.all([
-    fetchDistinctSubjects(endpoint, classUri).catch(() => null),
-    fetchPredicates(endpoint, classUri).catch((err) => {
+    fetchDistinctSubjects(endpoint, classUri, token).catch(() => null),
+    fetchPredicates(endpoint, classUri, token).catch((err) => {
       console.error(`  predicate fetch failed: ${err.message}`);
       return [];
     })
   ]);
   const predicates = [];
   for (const p of rawPredicates) {
-    predicates.push(await enrichPredicate(endpoint, classUri, p));
+    predicates.push(await enrichPredicate(endpoint, classUri, p, token));
   }
   return {
     uri: classUri,
@@ -726,7 +734,7 @@ function formatAge(cachedAt) {
   return `${days}d ago`;
 }
 async function main() {
-  const { endpoint, outputDir: outputPath, summary, shex, forceRefresh, classFilter } = parseArgs(process.argv);
+  const { endpoint, outputDir: outputPath, summary, shex, forceRefresh, classFilter, token } = parseArgs(process.argv);
   let classDataList;
   let totalTriples;
   const cached = !forceRefresh ? readCache(endpoint) : null;
@@ -737,8 +745,8 @@ async function main() {
   } else {
     console.error(`Connecting to ${endpoint}`);
     const [classes, tt] = await Promise.all([
-      fetchClasses(endpoint),
-      fetchTotalTriples(endpoint).catch(() => null)
+      fetchClasses(endpoint, token),
+      fetchTotalTriples(endpoint, token).catch(() => null)
     ]);
     totalTriples = tt;
     const triplesLabel = totalTriples !== null ? `, ${totalTriples.toLocaleString()} total triples` : "";
@@ -766,7 +774,7 @@ async function main() {
     for (let i = 0; i < targetClasses.length; i++) {
       const classUri = targetClasses[i];
       p.advance(1, `Processing ${i + 1}/${targetClasses.length}: ${classUri}`);
-      classDataList.push(await processClass(endpoint, classUri));
+      classDataList.push(await processClass(endpoint, classUri, token));
     }
     p.stop("Class indexing complete");
     writeCache({ endpoint, totalTriples, classDataList, cachedAt: (/* @__PURE__ */ new Date()).toISOString() });

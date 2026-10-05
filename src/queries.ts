@@ -201,16 +201,28 @@ LIMIT ${SH_CLASS_LIMIT + 1}`
 
 const SH_IN_LIMIT = 10
 
-function termToTurtle(term: SparqlTerm): string {
+// Escape a literal's lexical form for a "..." Turtle string; a raw newline,
+// quote or backslash in the data otherwise produces unparseable Turtle.
+function turtleString(value: string): string {
+  const escaped = value
+    .replace(/\\/g, '\\\\')
+    .replace(/"/g, '\\"')
+    .replace(/\n/g, '\\n')
+    .replace(/\r/g, '\\r')
+    .replace(/\t/g, '\\t')
+  return `"${escaped}"`
+}
+
+export function termToTurtle(term: SparqlTerm): string {
   if (term.type === 'uri') return `<${term.value}>`
   if (term.datatype) {
     const dt = term.datatype.startsWith(XSD)
       ? `xsd:${term.datatype.slice(XSD.length)}`
       : `<${term.datatype}>`
-    return `"${term.value}"^^${dt}`
+    return `${turtleString(term.value)}^^${dt}`
   }
-  if (term['xml:lang']) return `"${term.value}"@${term['xml:lang']}`
-  return `"${term.value}"`
+  if (term['xml:lang']) return `${turtleString(term.value)}@${term['xml:lang']}`
+  return turtleString(term.value)
 }
 
 export async function fetchLanguageIn(

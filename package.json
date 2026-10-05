@@ -35,6 +35,7 @@
     "build:cli": "tsup",
     "cli": "tsx src/cli.ts",
     "lint": "eslint .",
+    "test": "node --import tsx --test src/*.test.ts",
     "preview": "vite preview"
   },
   "dependencies": {
