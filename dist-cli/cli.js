@@ -29,7 +29,7 @@ var SHAPETROSPECTION = "urn:shapetrospection:";
 var CLASSES_QUERY = `SELECT DISTINCT ?class WHERE { [] a ?class . } ORDER BY ?class`;
 async function fetchClasses(endpoint, token = null) {
   const rows = await sparqlQuery(endpoint, CLASSES_QUERY, token);
-  return rows.map((b) => b.class.value);
+  return rows.filter((b) => b.class.type === "uri").map((b) => b.class.value);
 }
 async function fetchPredicates(endpoint, classUri, token = null) {
   const query = `SELECT DISTINCT ?predicate (COUNT(?s) AS ?count)
@@ -164,6 +164,7 @@ async function fetchShClass(endpoint, classUri, predicateUri, token = null) {
       ?s a <${classUri}> ; <${predicateUri}> ?o .
       FILTER(isIRI(?o))
       ?o a ?class .
+      FILTER(isIRI(?class))
     } GROUP BY ?class
   }
   FILTER(?withClass = ?total && ?total > 0)
@@ -220,6 +221,7 @@ ORDER BY ?value
 LIMIT ${SH_IN_LIMIT + 1}`;
   const rows = await sparqlQuery(endpoint, query, token);
   if (rows.length > SH_IN_LIMIT) return null;
+  if (rows.some((r) => r.value.type === "bnode")) return null;
   return rows.map((r) => termToTurtle(r.value));
 }
 

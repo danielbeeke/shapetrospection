@@ -6,7 +6,8 @@ const CLASSES_QUERY = `SELECT DISTINCT ?class WHERE { [] a ?class . } ORDER BY ?
 
 export async function fetchClasses(endpoint: string, token: string | null = null): Promise<string[]> {
   const rows = await sparqlQuery(endpoint, CLASSES_QUERY, token)
-  return rows.map(b => b.class.value)
+  // A blank-node class (e.g. an anonymous OWL class) has no name to build a shape on
+  return rows.filter(b => b.class.type === 'uri').map(b => b.class.value)
 }
 
 export async function fetchPredicates(endpoint: string, classUri: string, token: string | null = null): Promise<Predicate[]> {
@@ -188,6 +189,7 @@ export async function fetchShClass(
       ?s a <${classUri}> ; <${predicateUri}> ?o .
       FILTER(isIRI(?o))
       ?o a ?class .
+      FILTER(isIRI(?class))
     } GROUP BY ?class
   }
   FILTER(?withClass = ?total && ?total > 0)
@@ -274,5 +276,7 @@ ORDER BY ?value
 LIMIT ${SH_IN_LIMIT + 1}`
   const rows = await sparqlQuery(endpoint, query, token)
   if (rows.length > SH_IN_LIMIT) return null
+  // Blank nodes cannot be listed in sh:in, so the values cannot be enumerated
+  if (rows.some(r => r.value.type === 'bnode')) return null
   return rows.map(r => termToTurtle(r.value))
 }
